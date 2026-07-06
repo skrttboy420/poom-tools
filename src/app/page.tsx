@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import LogoutButton from "@/components/LogoutButton";
@@ -25,15 +26,24 @@ export default async function Home() {
 
       <section className="flex-1 p-6">
         <div className="mx-auto max-w-2xl space-y-4">
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300">
-            ✅ เชื่อม Supabase + auth สำเร็จ — พร้อมทำ STEP 3 (Reconciler)
-          </div>
-
           <div className="rounded-xl border border-black/10 p-4 dark:border-white/10">
             <h2 className="text-sm font-semibold">เครื่องมือ</h2>
-            <ul className="mt-2 space-y-1 text-sm text-neutral-500">
-              <li>• Reconciler — เทียบข้อมูล (กำลังจะทำ · STEP 3)</li>
-              <li>• DB probe / table-health / migration tracker (roadmap)</li>
+            <ul className="mt-3 space-y-2 text-sm">
+              <li>
+                <Link
+                  href="/reconcile"
+                  className="flex items-center justify-between rounded-lg border border-black/10 px-3 py-2 transition hover:border-black/30 dark:border-white/10 dark:hover:border-white/30"
+                >
+                  <span>
+                    <span className="font-medium">Reconciler</span>
+                    <span className="ml-2 text-neutral-500">เทียบข้อมูล 2 ไฟล์ (Excel/CSV)</span>
+                  </span>
+                  <span className="text-neutral-400">→</span>
+                </Link>
+              </li>
+              <li className="px-3 text-xs text-neutral-400">
+                • DB probe / table-health / migration tracker (roadmap)
+              </li>
             </ul>
           </div>
         </div>

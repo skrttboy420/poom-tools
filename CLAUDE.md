@@ -85,7 +85,9 @@ flow:
     - `NEXT_PUBLIC_SUPABASE_URL`
     - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
     - `SUPABASE_SERVICE_ROLE_KEY` (server เท่านั้น — ห้ามหลุดไป client)
-- **xlsx (SheetJS)** — parse Excel
+- **xlsx (SheetJS)** — parse Excel · **ลงจาก CDN ของ SheetJS (0.20.3)** ไม่ใช่ npm
+  (`npm i https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz`) → เวอร์ชัน npm 0.18.5 มี vuln + อ่านไฟล์ MOMO ไม่ได้
+- **fflate** — unzip/zip zip container เอง ใช้ซ่อมไฟล์ xlsx ที่ header เพี้ยน (เช่น MOMO)
 - **papaparse** — parse CSV
 - **auth คนเดียว** — แค่ภูมคนเดียว (password เดียว หรือ Supabase auth เฉพาะ account ภูม)
 - **deploy:** Vercel (private) หรือรัน localhost ก็ได้
@@ -122,8 +124,25 @@ flow:
 - 2026-07-07 — STEP 1 เสร็จ: `CLAUDE.md`
 - 2026-07-07 — STEP 2 เสร็จ: scaffold Next.js 16 + Tailwind v4 + Supabase auth (คนเดียว)
   · verify แล้ว: tsc/lint เขียว, `/` เด้ง login เมื่อยังไม่ auth, ล็อกอินจริงผ่าน · push ขึ้น GitHub
-  · ⚠️ `xlsx` (SheetJS) มี high-severity vuln ตอน parse — tool ส่วนตัวความเสี่ยงต่ำ แต่ถ้าซีเรียส
-    ค่อยย้ายไปลงจาก CDN ของ SheetJS (`npm i https://cdn.sheetjs.com/xlsx-latest/xlsx-latest.tgz`)
-- **ถัดไป: STEP 3 MVP Reconciler** — upload Excel/CSV → parse + column mapper → normalize ลง
-  staging table → หน้า diff เทียบ 2 ฝั่ง (key=tracking) → ไฮไลต์สี → export CSV/JSON
-  (รอไฟล์ตัวอย่างจริงจากพี่แต้ม/Pacred เพื่อทำ column preset)
+- 2026-07-07 — STEP 3 (MVP Reconciler) เสร็จ + verify แล้ว: หน้า `/reconcile` ทำงานทั้งหมด **client-side**
+  (ยังไม่แตะ staging table — ทำเป็น phase หน้า)
+  · **แก้ vuln xlsx แล้ว**: ย้ายไป SheetJS 0.20.3 จาก CDN (npm audit เหลือแค่ postcss-via-next)
+  · **แก้ปัญหาไฟล์ MOMO ได้แล้ว** — ไฟล์ MOMO เป็น zip ที่ local header อันแรกเพี้ยน (ขึ้นต้นไม่ใช่ `PK`)
+    ทุก entry เป็นแบบ STORED (ไม่บีบอัด) · SheetJS อ่านตรง ๆ ได้ขยะ →
+    **fallback: `fflate.unzipSync` (อ่านผ่าน central directory ที่ยังดี) → `zipSync` → ให้ xlsx อ่านซ้ำ**
+    logic อยู่ที่ `src/lib/reconcile/parse.ts` (`readWorkbookRobust`)
+  · โครง lib: `src/lib/reconcile/{types,parse,detect,diff,export,columns}.ts` (pure, ไม่พึ่ง DOM/DB)
+    - parse = robust reader (xlsx/csv + fflate repair) · detect = เดา header row + auto-map คอลัมน์
+    - diff = engine เทียบ (key join, numeric/text compare + tolerance) · export = CSV/JSON
+  · UI `src/app/reconcile/page.tsx`: อัปโหลด 2 ฝั่ง → เลือกแถว header เอง → **map คอลัมน์ยืดหยุ่น**
+    (เพิ่ม/ลบ field เองได้ · auto-guess ให้ก่อน) → กด "เทียบข้อมูล" → ตารางไฮไลต์สี
+    (เขียว=ตรง เหลือง=ไม่ตรง ฟ้า=เฉพาะA แดง=เฉพาะB) + filter + ปุ่ม export
+  · verify ใน Chrome จริง: (1) CSV สังเคราะห์ A/B → ครบ 4 สถานะถูกต้อง + export CSV ถูก
+    (2) ไฟล์ MOMO จริง → badge "ซ่อมไฟล์เพี้ยนแล้ว" ขึ้น, header เดาได้แถว 5, map Tracking/Weight/CBM ถูก
+    · ไม่มี console error
+  · **โครงสร้าง 2 format ที่รู้แล้ว:**
+    - พี่แต้ม (iTAM): header อยู่แถว 0, container ต่อแถว (คอลัมน์ 0, มีเฉพาะแถวแรก), tracking คอลัมน์ 9
+    - MOMO: header อยู่แถว 5, มี summary block แถว 2-3 (CONTAINER NAME อยู่ตรงนี้ ไม่ใช่ต่อแถว),
+      มีแถว subtotal/grand total ปน (tracking ว่าง → diff engine ข้ามให้อัตโนมัติ), tracking คอลัมน์ 7
+- **ถัดไป (STEP 3 phase 2 / roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
+  ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · เพิ่ม drag-drop upload · handle หลาย sheet ดีขึ้น
