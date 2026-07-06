@@ -104,7 +104,26 @@ flow:
 
 ---
 
-## 7. สถานะปัจจุบัน (อัพเดตทุก save-point)
+## 7. วิธีรัน + ล็อกอิน
 
-- 2026-07-07 — สร้าง repo + `CLAUDE.md` (STEP 1 เสร็จ)
-- ถัดไป: STEP 2 scaffold (Next.js + Tailwind + Supabase + auth) → STEP 3 MVP Reconciler
+- `npm run dev` → เปิด http://localhost:3000
+- ล็อกอิน: **email `pasit@poom-tools.local`** / รหัสผ่านที่ตั้งไว้ (ฟอร์ม prefill email ให้แล้ว)
+- สร้าง/รีเซ็ต account: `node --env-file=.env.local scripts/create-user.mjs`
+  (อ่าน `SEED_USER_EMAIL` / `SEED_USER_PASSWORD` จาก `.env.local`)
+- smoke test ว่าล็อกอินได้: `node --env-file=.env.local scripts/smoke-auth.mjs`
+
+โครงไฟล์สำคัญ:
+- `src/lib/supabase/{client,server,admin}.ts` — Supabase clients (browser / server / service-role)
+- `src/proxy.ts` — auth guard (Next 16 ใช้ `proxy.ts` แทน `middleware.ts`)
+- `src/app/login/page.tsx` · `src/app/page.tsx` · `src/components/LogoutButton.tsx`
+
+## 8. สถานะปัจจุบัน (อัพเดตทุก save-point)
+
+- 2026-07-07 — STEP 1 เสร็จ: `CLAUDE.md`
+- 2026-07-07 — STEP 2 เสร็จ: scaffold Next.js 16 + Tailwind v4 + Supabase auth (คนเดียว)
+  · verify แล้ว: tsc/lint เขียว, `/` เด้ง login เมื่อยังไม่ auth, ล็อกอินจริงผ่าน · push ขึ้น GitHub
+  · ⚠️ `xlsx` (SheetJS) มี high-severity vuln ตอน parse — tool ส่วนตัวความเสี่ยงต่ำ แต่ถ้าซีเรียส
+    ค่อยย้ายไปลงจาก CDN ของ SheetJS (`npm i https://cdn.sheetjs.com/xlsx-latest/xlsx-latest.tgz`)
+- **ถัดไป: STEP 3 MVP Reconciler** — upload Excel/CSV → parse + column mapper → normalize ลง
+  staging table → หน้า diff เทียบ 2 ฝั่ง (key=tracking) → ไฮไลต์สี → export CSV/JSON
+  (รอไฟล์ตัวอย่างจริงจากพี่แต้ม/Pacred เพื่อทำ column preset)
