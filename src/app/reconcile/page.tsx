@@ -505,14 +505,22 @@ function ResultView({
         </p>
       )}
 
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[640px] text-sm">
-          <thead>
+      <div className="mb-2 flex items-center justify-between text-xs text-neutral-500">
+        <span>
+          แสดง {visibleRows.length} แถว
+          {filter !== "all" ? ` (กรอง: ${chips.find((c) => c.key === filter)?.label ?? ""})` : ` จากทั้งหมด ${s.totalKeys}`}
+        </span>
+        <span className="text-neutral-400">เลื่อนในตารางเพื่อดูแถวอื่น ↕</span>
+      </div>
+
+      <div className="max-h-[65vh] overflow-auto rounded-lg border border-black/10 dark:border-white/10">
+        <table className="w-full min-w-[640px] border-collapse text-sm">
+          <thead className="sticky top-0 z-10 bg-neutral-50 shadow-[0_1px_0_rgba(0,0,0,0.08)] dark:bg-neutral-900">
             <tr className="text-left text-xs text-neutral-500">
-              <th className="px-2 py-1">{result.keyFieldLabel || "key"}</th>
-              <th className="px-2 py-1">สถานะ</th>
+              <th className="px-2 py-2">{result.keyFieldLabel || "key"}</th>
+              <th className="px-2 py-2">สถานะ</th>
               {result.compareFields.map((f) => (
-                <th key={f.id} className="px-2 py-1" colSpan={2}>
+                <th key={f.id} className="px-2 py-2" colSpan={2}>
                   {f.label} <span className="text-neutral-400">(A · B)</span>
                 </th>
               ))}
