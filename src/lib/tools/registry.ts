@@ -114,8 +114,8 @@ export const TOOLS: Tool[] = [
   { id: "url-encode", name: "เข้ารหัส / ถอดรหัส URL", desc: "encode/decode URL — escape ค่าใส่ query string หรืออ่าน URL ที่ถูก encode", icon: "🔗", category: "dev", href: "/encode", status: "ready", keywords: ["url", "encode", "decode", "escape", "query", "uri", "เข้ารหัส", "ถอดรหัส"] },
 
   // ---- เครื่องคำนวณ (soon) ----
-  { id: "vat", name: "คำนวณ VAT", desc: "คิดภาษีมูลค่าเพิ่ม 7%", icon: "🧮", category: "calc", status: "soon", keywords: ["vat", "ภาษี", "7%"] },
-  { id: "profit", name: "คำนวณกำไร", desc: "คิดกำไร/มาร์จิ้นจากต้นทุน-ราคาขาย", icon: "💰", category: "calc", status: "soon", keywords: ["profit", "กำไร", "margin"] },
+  { id: "vat", name: "คำนวณ VAT", desc: "บวก/ถอด VAT 7% แยกฐาน-ภาษี-ยอดรวม", icon: "🧮", category: "calc", status: "ready", href: "/calc", keywords: ["vat", "ภาษี", "7%", "มูลค่าเพิ่ม", "ถอดภาษี", "tax"] },
+  { id: "profit", name: "คำนวณกำไร / ตั้งราคา", desc: "กำไร/มาร์จิ้น/มาร์กอัป + หาราคาขายจาก % ที่อยากได้", icon: "💰", category: "calc", status: "ready", href: "/calc", keywords: ["profit", "กำไร", "margin", "markup", "มาร์จิ้น", "ตั้งราคา", "quote", "ราคาขาย"] },
 ];
 
 export function toolsByCategory(catId: string): Tool[] {

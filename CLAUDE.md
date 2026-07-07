@@ -295,8 +295,19 @@ flow:
     replace (g/ไม่ g/$1$2/เสีย), segmentText ประกอบกลับ=ต้นฉบับ + zero-width ไม่ค้าง · (2) **Chrome UI**: sample `([A-Z]{2,})-?(\d+)` บนข้อความจริง →
     4 match (abc พิมพ์เล็กถูกข้าม), กลุ่ม TU/12·KY/345·GZE/2025·TU/12 ถูก, ไฮไลต์ 4 จุด · replace `$2/$1` สลับกลุ่มได้ (TU-12→12/TU) ·
     pattern `([A-Z` → กล่องแดง "Unterminated character class" ไฮไลต์ 0 · console สะอาด
+- 2026-07-07 — **เครื่องมือที่ 13 พร้อมใช้: คำนวณ VAT + กำไร 🧮** (`/calc`) — ปิด `vat` + `profit` · ไว้ตั้งราคา/quote งานนำเข้า
+  · engine `src\lib\calc\price.ts` (pure): `computeVat(amount, rate=7, inclusive)` → 2 โหมด บวก VAT (ก่อน→รวม) / ถอด VAT (รวม→แยก ด้วย `a/(1+r/100)`) คืน {rate,base,vat,total} ·
+    `computeProfit(cost, sell)` → กำไร + มาร์จิ้น (กำไร/ขาย×100) + มาร์กอัป (กำไร/ทุน×100) กัน หาร 0 ·
+    `sellFromMargin(cost, m)` = `cost/(1-m/100)` (m≥100 คิดไม่ได้→0) · `sellFromMarkup(cost, m)` = `cost*(1+m/100)` ·
+    `safe()` กันค่าเพี้ยน NaN/Infinity→0 · `money()`/`pct()` จัดรูปคอมมา+ทศนิยม 2
+  · UI `src\app\calc\page.tsx` (client, ไม่ต้องอัปไฟล์): 3 การ์ดคำนวณสด (useMemo) — VAT (toggle บวก/ถอด + อัตราปรับได้) ·
+    กำไร/มาร์จิ้น (ต้นทุน+ขาย → กำไร/มาร์จิ้น/มาร์กอัป, ขาดทุนโชว์แดง) · หาราคาขายจาก % (toggle มาร์จิ้น/มาร์กอัป, margin≥100% เตือนแดง)
+  · verify 2 ชั้น: (1) **Node test 29/29 ผ่าน**: VAT excl 100→107 / incl 107→base 100, computeProfit 80→100 = กำไร 20/margin 20%/markup 25%,
+    ขาดทุน+หาร 0, sellFromMargin 80@20%=100 / @100%=0, sellFromMarkup 80@25%=100, round-trip margin↔markup, money/pct · (2) **Chrome UI**:
+    VAT excl 100→107 · ถอด VAT 107→base 100/vat 7 · กำไร 80/100 = 20 (margin 20%/markup 25%) · sellFromMargin 80@20%=100 · markup 80@25%=100 ·
+    margin 100% → ราคา 0 + เตือน "มาร์จิ้น ≥ 100% คิดไม่ได้" · search "กำไร" หน้าแรก → การ์ด "พร้อมใช้" → /calc · console สะอาด ไม่มี hydration
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤 · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, VAT/กำไร 🧮, จัดรูป SQL 🗃️)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮 · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, จัดรูป SQL 🗃️, ดู/สร้าง QR 📱)
