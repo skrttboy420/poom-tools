@@ -247,8 +247,19 @@ flow:
     ข้อมูลเดิมเป๊ะ — ไทยไม่เพี้ยน, ตัวเลขยัง number, quote+comma escape ถูก, ชื่อชีต sanitize (`Data:1?`→`Data_1_`), ชีตซ้ำ rename
     (2) **Chrome UI จริง**: CSV เข้า→via csv, nonEmpty 4 (ตัดแถวว่างท้าย), ปุ่มเขียว=Excel · กด export → blob magic `PK\x03\x04` 16KB MIME xlsx ชื่อ `.csv`→`.xlsx` ·
     เอา xlsx ที่ได้ drop กลับ → via xlsx, ข้อมูลครบ (แถว multi-box `KY001,2,6` ไม่หาย), ปุ่มเขียวสลับเป็น CSV · **console สะอาด ไม่มี error/hydration**
+- 2026-07-07 — **เครื่องมือที่ 9 พร้อมใช้: แยกไฟล์ Excel ✂️** (`/split`) — ต่อยอด `sheetsToXlsx` · ตรง use-case แยกตามตู้
+  · engine `src\lib\split\split.ts` (pure): `splitByColumn(header, data, col, {trim})` (แยกตามค่าคอลัมน์ เช่น container — trim ก่อนจับกลุ่ม,
+    คีย์ว่าง→กลุ่ม `(ว่าง)` ไม่ทิ้ง) · `splitByRows(header, data, chunk)` (แบ่งเป็นก้อน chunk, กัน chunk≤0 เป็น 1 ไม่ให้ loop ค้าง,
+    ตั้งชื่อก้อน `1-100`) · `groupsToSheets(result)` (แต่ละกลุ่ม→ชีตที่มี header นำหน้า) · stats {inputRows, groups, emptyKeyRows, biggest}
+    - **ปรัชญาไม่ทิ้งข้อมูล:** ทุกแถวต้องเข้ากลุ่มใดกลุ่มหนึ่งเสมอ (ผลรวมทุกกลุ่ม = inputRows)
+  · UI `src\app\split\page.tsx` (client): reuse parse/detect/columns/FileDropzone → อัปโหลด → เลือก header → เลือกโหมด
+    (by-column: chips คอลัมน์ auto-guess container ก่อน tracking · by-rows: input จำนวนแถว) → กด "แยกไฟล์" →
+    chips สรุป + การ์ดรายกลุ่ม (ชื่อ+จำนวนแถว+ปุ่ม ↓CSV ต่อกลุ่ม) + ปุ่มเขียว "↓ Excel ชีตละกลุ่ม" (ทั้งไฟล์)
+  · verify 2 ชั้น: (1) **Node test 15/15 ผ่าน**: splitByColumn (TU-A รวม 3 นับ trim, `(ว่าง)` แยกถูก, ผลรวม = inputRows ไม่หาย),
+    splitByRows (2+2+1 = 3 ก้อน, ชื่อ `1-2`/`5-5`), chunk 0 กันเป็น 1 · (2) **Chrome UI**: auto-guess = container, แยก 3 กลุ่ม
+    (TU-A 3/TU-B 1/(ว่าง) 2, รวม 6 = แถวเข้า) · Excel ทั้งไฟล์ = PK magic 18KB · CSV ต่อกลุ่มขึ้นต้น header, ชื่อ `packing-TU-A.csv` · console สะอาด
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄 · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, รวม/แยกไฟล์ Excel)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️ · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, รวมหลายไฟล์ Excel 🧩)
