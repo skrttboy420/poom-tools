@@ -191,6 +191,12 @@ flow:
     ตารางข้อมูลหลัง clean (sticky header) + ตัวอย่างก่อน→หลัง + ดาวน์โหลด CSV
   · verify Chrome จริง (CSV เลอะ 5 แถว): "  ky001  "→KY001, "1,234.5"→1234.5, "0.24 "→0.24, " hello  world "→"hello world",
     ลบแถวว่าง 2, แก้ 7 ช่อง (ยุบ1/ตัวเลข3/key3) · dedup ปิด = KY001-1 + KY002 ซ้ำ อยู่ครบ · เปิด dedup = ลบ KY002 ซ้ำ 1 (KY001-1 ไม่ถูกนับซ้ำกับ KY001) · export ไม่ error
+- 2026-07-07 — **เครื่องมือที่ 5 พร้อมใช้: แปลงหน่วย** (`/convert`) — quick-win logistics
+  · engine `src/lib/convert/units.ts` (pure): 3 หมวด (น้ำหนัก base kg / ความยาว base m / ปริมาตร base m³=CBM)
+    แต่ละหน่วยเก็บ `factor` (= ค่าเทียบหน่วยฐาน) · `convert(v,from,to)` = v*from/to · `convertToAll` แปลงเป็นทุกหน่วยพร้อมกัน
+    · `formatResult` ปรับทศนิยมตามขนาด (เล็กมาก 8 ตำแหน่ง, ใหญ่ 2)
+  · UI `src/app/convert/page.tsx` (client): แท็บหมวด → พิมพ์ค่า + เลือกหน่วยต้นทาง → ตารางโชว์ทุกหน่วยสด ๆ (ไฮไลต์แถวต้นทาง)
+  · verify Chrome จริง: 1kg=1000g/0.001ton/2.2046lb/35.274oz · 1inch=2.54cm/25.4mm/0.0833ft · 1ft³=0.028317CBM/28.317L · ถูกทุกค่า
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · เพิ่ม drag-drop upload · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
