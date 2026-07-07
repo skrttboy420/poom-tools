@@ -329,8 +329,18 @@ flow:
   · verify 2 ชั้น: (1) **Node test 18/18 ผ่าน**: contains + case, numeric gt/lte, empty (0≠ว่าง), AND/OR, ทุกคอลัมน์, quick+cond,
     ไม่มีเงื่อนไข→คืนทุกแถว, cond ค่าว่างถูกข้าม, starts/ends, not-equals · (2) **Chrome UI** (drop CSV 5 แถว):
     โหลด 5/5 header ถูก · quick "TU-A" → 2 (KY001/KY002) · weight>5 → 3 (12/5.5/340) · export `packing-กรอง.csv` 72B type csv · console สะอาด
+- 2026-07-07 — **เครื่องมือที่ 16 พร้อมใช้: เทียบข้อความ 🔀** (`/compare-text`) — tool ใหม่ในหมวด "เทียบ" (คู่กับ compare-json)
+  · engine `src\lib\textdiff\textdiff.ts` (pure): `diffLines(aText, bText, {ignoreCase, trim, ignoreBlank})` → LCS diff ทีละบรรทัด →
+    `DiffLine[]` {kind: same|added|removed, aLine?, bLine?, text} + stats · DP table Int32Array (O(n·m)) · cap 2000 บรรทัด/ฝั่ง
+    - แยกบรรทัดรองรับ CRLF/CR/LF · normalize ตาม option ก่อนเทียบ (แต่โชว์ข้อความจริง) · `diffToText` = unified (+/-/space) copy ได้
+    - **invariant:** same+removed = |A|, same+added = |B| (ไม่ทิ้งบรรทัด)
+  · UI `src\app\compare-text\page.tsx` (client): 2 ช่องวางข้อความ + toggle (trim default on/ignoreCase/ignoreBlank) →
+    chips (+เพิ่ม/−หาย/เหมือน) + ตาราง diff ไฮไลต์สี (เขียว=เพิ่ม แดง=หาย) โชว์เลขบรรทัด A/B + เครื่องหมาย +/− · checkbox "โชว์เฉพาะที่ต่าง" + คัดลอก diff
+  · verify 2 ชั้น: (1) **Node test 22/22 ผ่าน**: identical, added/removed กลาง, changed=remove+add, LCS ลำดับถูก (1,3,4),
+    ignoreCase/trim/ignoreBlank, ฝั่งเดียวว่าง, invariant same+removed=|A|, diffToText, CRLF · (2) **Chrome UI**: sample A↔B →
+    +2/−2/เหมือน 4 (KY003 หาย · KY005 เพิ่ม · 340.5→341.0) เลขบรรทัด A/B ถูก · "โชว์เฉพาะที่ต่าง" → 4 บรรทัด · console สะอาด ไม่มี hydration
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎 · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, จัดรูป SQL 🗃️, สร้าง QR 🔳)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀 · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, จัดรูป SQL 🗃️, สร้าง QR 🔳)
