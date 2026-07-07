@@ -158,6 +158,24 @@ flow:
     (2) GZE 842 แถว (iTAM) → ตัดแถวว่าง 718 เหลือ 124 แถวจริง, จับ dup ถูก (`KY...-25` ซ้ำ 70 ครั้ง),
     grand-total row (ไม่มี tracking) sort ขึ้นบนสุด · ไม่มี console error
   · เพิ่มลิงก์ในหน้าหลัก `src/app/page.tsx`
+- 2026-07-07 — **fix Gap Finder: ปิดตรวจ tracking ซ้ำเป็น default** (commit 31d6cca)
+  · ภูมชี้ว่า packing list ปกติ 1 tracking แตกได้หลายกล่อง (หลายแถว, มี `-1`/`-25` หรือ `1/(จำนวนกล่อง)`)
+    → tracking ซ้ำ = เรื่องปกติ ไม่ใช่ error · `checkDupKey` default = false, label บอกชัดว่าเปิดเฉพาะไฟล์ 1 tracking/แถว (เช่น MOMO)
+  · verify: GZE จาก 100 แถวมีปัญหา → เหลือ 1 (แค่ grand-total row), clean 123/124 (99%)
+- 2026-07-07 — **รื้อหน้าแรกใหม่ = intent-based Tool Hub** (ตามบรีฟ `บรีฟเพิ่มเติม.txt`) + verify แล้ว
+  · แนวคิด: เลิกแบ่งเมนูตามชนิดไฟล์ (PDF/Excel/AI) → แบ่งตาม **"ผู้ใช้อยากทำอะไร"** + ช่องค้นหาใหญ่ "วันนี้คุณอยากทำอะไร?"
+  · `src/lib/tools/registry.ts` (data-driven): `CATEGORIES` 10 หมวด (เรียงตามที่ภูมใช้จริง: เทียบ🔍/จัดระเบียบ🧹/โลจิสติกส์📦/
+    excel📊/เอกสาร📄/รูป🖼️/ai🤖/ออฟฟิศ💼/dev💻/คำนวณ🧮) + `TOOLS` = 2 ready (reconcile→/reconcile, gap→/gap) + ~35 soon (seed จากบรีฟ)
+    - helper: `searchTools(q)` แตก query เป็น term แล้ว match ทุก term กับ name+desc+keywords · `readyTools()` · `toolsByCategory()`
+  · `src/components/ToolHub.tsx` (client): hero + search (autoFocus) → โหมดค้นหาโชว์ grid ผลลัพธ์ / โหมดปกติโชว์ รายการโปรด→พร้อมใช้→แต่ละหมวด
+    - **favorites** เก็บใน localStorage ผ่าน `useSyncExternalStore` (เลี่ยง set-state-in-effect ของ React 19 + กัน hydration mismatch)
+    - การ์ด ready คลิกทั้งใบ (Link overlay) + hover ยกตัว/เงา · การ์ด soon เป็น dashed opacity-70 · ปุ่มดาว ★/☆ toggle
+  · `src/app/page.tsx`: server component เก็บ auth guard ไว้เหมือนเดิม แล้ว render `<ToolHub/>`
+  · verify Chrome จริง: search "cbm"→1 รายการ (การ์ด CBM), กดดาว Gap Finder → เกิดหมวด ⭐ รายการโปรด + persist ข้ามการ reload,
+    คลิกการ์ด Reconciler → ไป /reconcile · **ไม่มี console error / ไม่มี hydration warning** (โหลดใหม่แล้วเช็ค console สะอาด)
+  · gate เขียว (tsc + lint) ก่อน commit
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · เพิ่ม drag-drop upload · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
+  · **จากบรีฟ (ยังไม่ทำ):** ปุ่มสลับ dark/light เอง (ตอนนี้ตาม system อย่างเดียว) · ประวัติการใช้งาน (history) ·
+    แชร์ผลลัพธ์ · drag-drop upload · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว (เริ่มจากที่ภูมใช้จริง: CBM, Data Cleaner)
