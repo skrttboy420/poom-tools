@@ -91,9 +91,9 @@ export const TOOLS: Tool[] = [
 
   // ---- งานรูปภาพ (soon) ----
   { id: "remove-bg", name: "ลบพื้นหลัง", desc: "ลบพื้นหลังรูปอัตโนมัติ", icon: "🪄", category: "image", status: "soon", keywords: ["background", "พื้นหลัง", "remove"] },
-  { id: "resize-image", name: "ย่อ/ขยายรูปหลายรูป", desc: "ปรับขนาดรูปทีละหลายไฟล์", icon: "🖼️", category: "image", status: "soon", keywords: ["resize", "ย่อ", "ขยาย", "รูป"] },
-  { id: "compress-image", name: "บีบอัดรูปภาพ", desc: "ลดขนาดไฟล์รูปโดยคงคุณภาพ", icon: "🗜️", category: "image", status: "soon", keywords: ["compress", "บีบอัด", "รูป"] },
-  { id: "convert-image", name: "แปลง PNG / JPG / WEBP", desc: "แปลงชนิดไฟล์รูปภาพ", icon: "🔄", category: "image", status: "soon", keywords: ["png", "jpg", "webp", "แปลง"] },
+  { id: "resize-image", name: "ย่อ/ขยายรูป", desc: "ปรับขนาดรูป (คงอัตราส่วน · ทำในเครื่องล้วน)", icon: "🖼️", category: "image", href: "/image", status: "ready", keywords: ["resize", "ย่อ", "ขยาย", "รูป", "ขนาด", "scale"] },
+  { id: "compress-image", name: "บีบอัดรูปภาพ", desc: "ลดขนาดไฟล์รูป (ปรับคุณภาพ JPG/WEBP)", icon: "🗜️", category: "image", href: "/image", status: "ready", keywords: ["compress", "บีบอัด", "รูป", "ลดขนาด", "quality"] },
+  { id: "convert-image", name: "แปลง PNG / JPG / WEBP", desc: "แปลงชนิดไฟล์รูป + ย่อ + บีบอัด (ทำในเครื่องล้วน)", icon: "🔄", category: "image", href: "/image", status: "ready", keywords: ["png", "jpg", "jpeg", "webp", "แปลง", "convert", "รูป", "image"] },
 
   // ---- เครื่องมือ AI (soon) ----
   { id: "ai-translate", name: "AI แปลภาษา", desc: "แปลข้อความหลายภาษา", icon: "🌍", category: "ai", status: "soon", keywords: ["translate", "แปล", "ภาษา"] },

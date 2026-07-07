@@ -356,8 +356,21 @@ flow:
     `json->'k'->>'v'`/`arr[1]`/`a||b`/`x%y`/string escape `''`/comment · + INNER JOIN & LEFT OUTER JOIN บรรทัดเดียว
     (2) **Chrome UI จริง**: sample query → semanticSafe=true (เนื้อไม่เพี้ยน), keyword เป็นตัวใหญ่, FROM/WHERE/GROUP/ORDER ขึ้นบรรทัด,
     INNER JOIN บรรทัดเดียว (ไม่แตก), AND ย่อหน้า, string `'active'` ครบ, ดาวน์โหลด .sql blob มีขนาด · **console สะอาด ไม่มี error/hydration**
+- 2026-07-07 — **เครื่องมือที่ 18 พร้อมใช้: แปลง/ย่อ/บีบอัดรูป 🖼️** (`/image`) — quick-win · ปลด 3 รายการ roadmap พร้อมกัน
+  (resize-image + compress-image + convert-image → ready ชี้ `/image` เพราะ pipeline เดียวกัน)
+  · **ทำในเครื่องล้วน (Canvas API) — ไม่มี dep, ไม่อัปโหลดรูปไปไหน** (ปลอดภัย + ตรงปรัชญา pure)
+  · engine `src\lib\image\resize.ts` (pure, เทสได้ — แยก "คณิตของขนาด" ออกจาก canvas): `computeTargetSize(w, h, opts)` →
+    3 โหมด: `none` (คงเดิม) · `fit` (ย่อพอดีกรอบ maxW×maxH คงอัตราส่วน, ไม่ขยายเกินต้นฉบับเว้น allowUpscale) · `scale` (คูณ %) ·
+    ปัดจำนวนเต็ม + min 1px · `formatMime`/`supportsQuality` (png ไม่สน quality) · `changeImageExt` (jpeg→.jpg) · `humanSize`
+  · UI `src\app\image\page.tsx` (client): FileDropzone accept image → อ่านขนาดจริง → เลือกรูปแบบ (JPG/PNG/WEBP) + โหมดขนาด +
+    quality slider (jpeg/webp) → กด "แปลงรูป" → วาดลง canvas (พื้นขาวสำหรับ jpeg กันพื้นดำ) → `toBlob` → พรีวิวก่อน→หลัง +
+    บอก %เล็กลง/ใหญ่ขึ้น + ดาวน์โหลด · revoke object URL กัน memory leak
+  · verify 2 ชั้น: (1) **Node test 26/26 ผ่าน**: computeTargetSize (none/scale/fit ครบ — คงอัตราส่วน, ไม่ขยายเกิน,
+    เลือกด้านบีบมากสุด, min 1px, ปัดเศษ), changeImageExt (jpeg→jpg, คงจุดในชื่อ), mime/quality/humanSize
+    (2) **Chrome UI จริง** (สร้าง PNG 200×100 ผ่าน canvas ป้อน dropzone): แปลง PNG→JPG ได้ (test.jpg, 200×100, blob โชว์),
+    เปลี่ยนโหมด scale 50% → 100×50 (ต้นฉบับยังโชว์ 200×100), ดาวน์โหลด blob test.jpg · **console สะอาด ไม่มี error/hydration**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️ · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, สร้าง QR 🔳)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️ · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, สร้าง QR 🔳)
