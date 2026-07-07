@@ -80,7 +80,7 @@ export const TOOLS: Tool[] = [
   { id: "merge-excel", name: "รวมหลายไฟล์ Excel", desc: "ลากหลายไฟล์มาวางพร้อมกัน → รวมเป็นไฟล์เดียว จับคอลัมน์ตามชื่อหัวตาราง (กันสลับ) เพิ่มคอลัมน์ต้นทางได้ · ทุกแถวไม่หาย", icon: "🧩", category: "excel", href: "/merge", status: "ready", keywords: ["merge", "รวม", "excel", "รวมไฟล์", "รวมชีต", "consolidate", "packing", "ตู้", "หลายไฟล์"] },
   { id: "split-excel", name: "แยกไฟล์ Excel", desc: "แยกไฟล์เดียวเป็นหลายกลุ่ม ตามค่าคอลัมน์ (เช่น แยกตามตู้) หรือจำนวนแถว → ดาวน์โหลดเป็น Excel ชีตละกลุ่ม/CSV แยกกลุ่ม", icon: "✂️", category: "excel", href: "/split", status: "ready", keywords: ["split", "แยก", "excel", "แยกไฟล์", "container", "ตู้", "แยกตามคอลัมน์", "chunk"] },
   { id: "csv-excel", name: "แปลง CSV ↔ Excel", desc: "อัปไฟล์แล้วดาวน์โหลดเป็นอีกนามสกุล · อ่านไฟล์ Excel เพี้ยน (MOMO) แล้ว export กลับเป็น .xlsx มาตรฐานได้", icon: "🔄", category: "excel", href: "/csv-excel", status: "ready", keywords: ["csv", "excel", "xlsx", "แปลง", "convert", "แปลงไฟล์", "momo", "ซ่อมไฟล์"] },
-  { id: "random-name", name: "สุ่มรายชื่อ", desc: "สุ่มเลือกรายชื่อจากลิสต์", icon: "🎲", category: "excel", status: "soon", keywords: ["random", "สุ่ม", "รายชื่อ"] },
+  { id: "random-name", name: "สุ่มรายชื่อ", desc: "สุ่มผู้โชคดี / สลับลำดับ / แบ่งกลุ่มเท่า ๆ กัน (ใส่ seed ทำซ้ำได้)", icon: "🎲", category: "excel", href: "/random", status: "ready", keywords: ["random", "สุ่ม", "รายชื่อ", "shuffle", "สลับ", "กลุ่ม", "group", "จับฉลาก"] },
 
   // ---- งานเอกสาร (soon) ----
   { id: "merge-pdf", name: "รวม PDF", desc: "รวมหลาย PDF เป็นไฟล์เดียว", icon: "📄", category: "docs", status: "soon", keywords: ["pdf", "รวม", "merge"] },

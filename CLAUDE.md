@@ -369,8 +369,21 @@ flow:
     เลือกด้านบีบมากสุด, min 1px, ปัดเศษ), changeImageExt (jpeg→jpg, คงจุดในชื่อ), mime/quality/humanSize
     (2) **Chrome UI จริง** (สร้าง PNG 200×100 ผ่าน canvas ป้อน dropzone): แปลง PNG→JPG ได้ (test.jpg, 200×100, blob โชว์),
     เปลี่ยนโหมด scale 50% → 100×50 (ต้นฉบับยังโชว์ 200×100), ดาวน์โหลด blob test.jpg · **console สะอาด ไม่มี error/hydration**
+- 2026-07-07 — **เครื่องมือที่ 19 พร้อมใช้: สุ่มรายชื่อ 🎲** (`/random`) — quick-win ตัวสุดท้ายที่ pure + เทสได้แน่นในรอบนี้
+  · engine `src\lib\random\pick.ts` (pure): `parseList` (ทีละบรรทัด + dedupe option) · `mulberry32(seed)` (RNG deterministic) ·
+    `shuffle` (Fisher-Yates ยุติธรรม ไม่แก้ต้นฉบับ) · `pickN` (สุ่มไม่ซ้ำ n ตัว) · `splitGroups` (แบ่ง k กลุ่ม เกลี่ยเท่า round-robin)
+    - **RNG inject ได้** → ใส่ seed แล้วผลซ้ำเดิม (reproducible) + เทส deterministic ได้ · **invariant: splitGroups ผลรวม = จำนวน items (ไม่ทิ้ง/ไม่เพิ่ม)**
+  · UI `src\app\random\page.tsx` (client): วางรายชื่อ → 3 โหมด (สุ่มผู้โชคดี N / สลับลำดับ / แบ่งกลุ่ม) + toggle ตัดซ้ำ + toggle seed (ทำซ้ำได้) → คัดลอกผล
+  · verify 2 ชั้น: (1) **Node test 26/26 ผ่าน**: parseList (trim/CRLF/dedupe), mulberry32 (seed เดิม→เลขเดิม), shuffle (permutation ไม่แก้ต้นฉบับ),
+    pickN (ไม่ซ้ำ/n≥len→ทั้งหมด/n≤0→[]), splitGroups (ผลรวมครบ/เกลี่ยเท่า/k≤0→1กลุ่ม/k>items) · (2) **Chrome UI**: 7 รายชื่อ, seed 42 สุ่ม 3 คน = [D,B,A]
+    กดซ้ำได้ผลเดิม (reproducible), แบ่ง 3 กลุ่ม = [3,2,2] รวม 7 ครบไม่ทิ้ง เกลี่ยเท่า · console สะอาด
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
-  · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️ · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, สร้าง QR 🔳)
+  · **soon ที่เหลือ = ติดเงื่อนไข** (จงใจยังไม่ทำ ตามกฎ "ห้ามทำงานบัค/ไม่มี dep เกินจำเป็น"):
+    - ต้อง dep นอก: PDF (merge/split/compare/pdf→excel), OCR, ลบพื้นหลัง, AI ทุกตัว (แปล/อีเมล/สรุป/prompt)
+    - ต้อง "vector ตรวจถูกต้อง" ที่ยืนยันเองไม่ได้ → **QR / barcode** (ปล่อยไปถ้าสแกนได้ค่าผิด = อันตราย → รอ lib ที่เชื่อถือได้)
+    - ต้องไฟล์จริงของภูม → **invoice-vs-packing 🧾** (คือ reconcile เฉพาะทาง — รอ format จริงก่อนค่อยทำ ไม่งั้นเดา schema ผิด)
+    - ต้อง spec/network → container-load (3D packing), fx-rate (เรตสด)
+  · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲)
