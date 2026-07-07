@@ -213,9 +213,18 @@ flow:
     · JSON เสีย = โชว์กล่องแดง + บอกบรรทัด/คอลัมน์
   · verify Chrome จริง: `{"b":2,"a":1,"nested":{"z":[3,1,2]}}` → beautify 2 ช่องถูก, stats (key ชั้นบน 3/ทั้งหมด 4/ลึก 4) ถูก,
     เรียง key → a,b,nested (array คงเดิม), minify → บรรทัดเดียว, JSON comma หาย → "ราวบรรทัด 4 คอลัมน์ 3" ถูก · console สะอาด
+- 2026-07-07 — **ฟีเจอร์ปุ่มสลับธีม dark/light เสร็จ + verify แล้ว** (ตามบรีฟ — เลิกตาม system อย่างเดียว)
+  · เปลี่ยน dark mode เป็น **class-based**: `globals.css` เพิ่ม `@custom-variant dark (&:where(.dark, .dark *));`
+    + ย้าย dark CSS vars จาก `@media (prefers-color-scheme)` ไปที่ `.dark` (class บน `<html>` เป็น source of truth)
+  · `src\components\ThemeToggle.tsx` (client): ปุ่มลอยมุมขวาล่าง (`fixed bottom-4 right-4`) วน 3 สถานะ ตามระบบ🖥️→สว่าง☀️→มืด🌙
+    - ใช้ `useSyncExternalStore` (อ่าน localStorage `poom-theme`) เลี่ยง hydration mismatch + กฎ set-state-in-effect ของ React 19
+    - โหมด system: มี `matchMedia('change')` listener ตามธีม OS แบบสด · `applyTheme` resolve system→มืด/สว่าง แล้ว toggle class `.dark`
+  · `src\app\layout.tsx`: ใส่ **inline blocking script** ใน `<head>` (อ่าน localStorage + resolve system ก่อน paint = กันจอกระพริบ/FOUC)
+    + `suppressHydrationWarning` บน `<html>` (เพราะ script แก้ class ก่อน React hydrate) + render `<ThemeToggle/>` ระดับ layout (โผล่ทุกหน้า)
+  · verify Chrome จริง (ระบบตั้ง dark): เริ่มต้น system→`.dark` bg มืด (พฤติกรรมเดิมคงอยู่), สว่าง→override เป็นขาวแม้ระบบมืด,
+    มืด→บังคับมืด, persist หลัง reload (stored 'light' ยังสว่าง ไม่ flash), **ไม่มี console error / hydration warning** · คืน default (ลบ key) หลังเทส
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
-  · **จากบรีฟ (ยังไม่ทำ):** ปุ่มสลับ dark/light เอง (ตอนนี้ตาม system อย่างเดียว) · ประวัติการใช้งาน (history) ·
-    แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON · ถัดไปที่คุ้ม: ลบข้อมูลซ้ำ ♻️, เทียบ Invoice↔Packing 🧾)
+  · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light · ถัดไปที่คุ้ม: ลบข้อมูลซ้ำ ♻️, เทียบ Invoice↔Packing 🧾)

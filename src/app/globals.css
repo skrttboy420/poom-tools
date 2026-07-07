@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* dark mode แบบ class-based: `dark:` จะทำงานเมื่อมี .dark อยู่บน <html>
+   (ปุ่มสลับธีม/inline script เป็นคนใส่ class ให้ — โหมด system ถูก resolve เป็น .dark/ไม่มี ตั้งแต่ก่อน paint) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -12,11 +16,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 body {
