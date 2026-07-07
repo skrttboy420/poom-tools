@@ -7,6 +7,7 @@ import { defaultFields, guessColumns, guessHeaderRow } from "@/lib/reconcile/det
 import { reconcile } from "@/lib/reconcile/diff";
 import { diffToCsv, diffToJson, downloadText } from "@/lib/reconcile/export";
 import { columnOptionLabel } from "@/lib/reconcile/columns";
+import FileDropzone from "@/components/FileDropzone";
 import type {
   DiffResult,
   FieldDef,
@@ -346,15 +347,12 @@ function SideCard({
         )}
       </div>
 
-      <label className="flex cursor-pointer items-center justify-center rounded-lg border border-dashed border-black/20 px-3 py-4 text-sm text-neutral-500 hover:border-black/40 dark:border-white/20">
-        <input
-          type="file"
-          accept=".xlsx,.xls,.csv,.tsv,.txt"
-          className="hidden"
-          onChange={(e) => onFile(e.target.files?.[0])}
-        />
-        {busy ? "กำลังอ่าน..." : state ? `เปลี่ยนไฟล์ — ${state.file.fileName}` : "เลือกไฟล์ (.xlsx / .csv)"}
-      </label>
+      <FileDropzone
+        onFile={onFile}
+        accept=".xlsx,.xls,.csv,.tsv,.txt"
+        busy={busy}
+        label={state ? `เปลี่ยนไฟล์ — ${state.file.fileName}` : "ลากไฟล์มาวาง หรือคลิกเลือก (.xlsx / .csv)"}
+      />
 
       {state && sheet && (
         <div className="mt-3 space-y-2">

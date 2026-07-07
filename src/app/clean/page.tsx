@@ -6,6 +6,7 @@ import { parseFile } from "@/lib/reconcile/parse";
 import { defaultFields, guessColumns, guessHeaderRow } from "@/lib/reconcile/detect";
 import { columnOptionLabel } from "@/lib/reconcile/columns";
 import { downloadText } from "@/lib/reconcile/export";
+import FileDropzone from "@/components/FileDropzone";
 import {
   findCleanResult,
   cleanToCsv,
@@ -180,14 +181,12 @@ export default function CleanPage() {
               </span>
             )}
           </div>
-          <input
-            type="file"
-            accept=".xlsx,.xls,.csv"
-            onChange={(e) => handleFile(e.target.files?.[0])}
-            className="block w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-neutral-900 file:px-3 file:py-1.5 file:text-white dark:file:bg-white dark:file:text-black"
+          <FileDropzone
+            onFile={handleFile}
+            accept=".xlsx,.xls,.csv,.tsv,.txt"
+            busy={busy}
+            label={state ? `เปลี่ยนไฟล์ — ${state.file.fileName}` : "ลากไฟล์มาวาง หรือคลิกเลือก (.xlsx / .csv)"}
           />
-          {state && <p className="mt-2 text-xs text-neutral-500">{state.file.fileName}</p>}
-          {busy && <p className="mt-2 text-xs text-neutral-500">กำลังอ่านไฟล์…</p>}
         </div>
 
         {state && (

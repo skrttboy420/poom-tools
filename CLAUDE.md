@@ -197,9 +197,17 @@ flow:
     · `formatResult` ปรับทศนิยมตามขนาด (เล็กมาก 8 ตำแหน่ง, ใหญ่ 2)
   · UI `src/app/convert/page.tsx` (client): แท็บหมวด → พิมพ์ค่า + เลือกหน่วยต้นทาง → ตารางโชว์ทุกหน่วยสด ๆ (ไฮไลต์แถวต้นทาง)
   · verify Chrome จริง: 1kg=1000g/0.001ton/2.2046lb/35.274oz · 1inch=2.54cm/25.4mm/0.0833ft · 1ft³=0.028317CBM/28.317L · ถูกทุกค่า
+- 2026-07-07 — **ฟีเจอร์ drag-drop upload เสร็จ + verify แล้ว** (ลดขั้นตอน: ลากไฟล์จาก Explorer มาวางได้เลย)
+  · คอมโพเนนต์ใช้ร่วม `src\components\FileDropzone.tsx` (client): `role="button"` + tabindex (คลิก/Enter/Space เปิด dialog),
+    handle `onDragOver`/`onDragLeave`/`onDrop` มี state `over` ไฮไลต์เขียว (emerald) + สลับ emoji 📄→📥,
+    input file ซ่อนไว้ · เคลียร์ `e.target.value` หลัง onChange เพื่อเลือกไฟล์เดิมซ้ำได้
+  · wire เข้าทั้ง 3 เครื่องมือไฟล์ แทน `<label>+<input type=file>` เดิม: `/gap`, `/clean`, `/reconcile` (SideCard ทั้งฝั่ง A/B)
+    · accept `.xlsx,.xls,.csv,.tsv,.txt` · label โชว์ชื่อไฟล์ปัจจุบันเมื่อมีไฟล์แล้ว
+  · verify Chrome จริงทั้ง 3 หน้า (สร้าง File+DataTransfer แล้ว dispatch DragEvent): dragover → ไฮไลต์ emerald + emoji 📥 ขึ้น,
+    drop → parse ไฟล์เข้าจริง (header preview + auto-detect ขึ้นครบ), reconcile รับ drop ได้ทั้งฝั่ง A และ B · console สะอาด ไม่มี error
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
-  ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · เพิ่ม drag-drop upload · handle หลาย sheet ดีขึ้น
+  ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
   · **จากบรีฟ (ยังไม่ทำ):** ปุ่มสลับ dark/light เอง (ตอนนี้ตาม system อย่างเดียว) · ประวัติการใช้งาน (history) ·
-    แชร์ผลลัพธ์ · drag-drop upload · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
-    (✅ ทำแล้ว: CBM, Data Cleaner · ถัดไปที่คุ้ม: แปลงหน่วย ⚖️, ลบข้อมูลซ้ำ ♻️, เทียบ Invoice↔Packing 🧾)
+    แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload · ถัดไปที่คุ้ม: ลบข้อมูลซ้ำ ♻️, เทียบ Invoice↔Packing 🧾)
