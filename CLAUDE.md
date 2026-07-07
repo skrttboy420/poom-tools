@@ -339,8 +339,25 @@ flow:
   · verify 2 ชั้น: (1) **Node test 22/22 ผ่าน**: identical, added/removed กลาง, changed=remove+add, LCS ลำดับถูก (1,3,4),
     ignoreCase/trim/ignoreBlank, ฝั่งเดียวว่าง, invariant same+removed=|A|, diffToText, CRLF · (2) **Chrome UI**: sample A↔B →
     +2/−2/เหมือน 4 (KY003 หาย · KY005 เพิ่ม · 340.5→341.0) เลขบรรทัด A/B ถูก · "โชว์เฉพาะที่ต่าง" → 4 บรรทัด · console สะอาด ไม่มี hydration
+- 2026-07-07 — **เครื่องมือที่ 17 พร้อมใช้: จัดรูปแบบ SQL 🗃️** (`/sql`) — dev quick-win (อ่าน query ของ Pacred/Supabase ง่ายขึ้น)
+  · **ปรัชญาหลัก = "ปลอดภัยเชิงความหมาย" (semantically safe):** ตัวจัดรูปนี้ **ห้ามแก้ความหมาย query เด็ดขาด**
+    → preserve ทุก token ตามเดิม (string/comment/quoted-ident/operator/เลขทศนิยม ไม่แตะเลย) เปลี่ยนแค่ 2 อย่าง:
+    (1) ตัวพิมพ์ใหญ่ของ keyword (2) ช่องว่าง/ขึ้นบรรทัด "ระหว่าง" token เท่านั้น
+  · engine `src\lib\sql\format.ts` (pure): `formatSql(sql, {uppercaseKeywords?, indent?})` →
+    - `tokenize` แตกเป็น token {t: ws|comment|string|ident|word|symbol, v, **glueLeft**} · glueLeft = token นี้ติดตัวหน้า (ไม่มี ws คั่น)
+      → **กฎ glue:** เดิมติดกัน (เช่น `3.14`, `->>`, `b::int`) คงติด · เดิมมี ws คั่นใส่ 1 ช่องว่าง (SQL มองช่องว่างกี่ตัวก็เท่ากัน)
+    - รู้จัก comment (`--`, `/* */`), string `'...'` (escape `''`), quoted-ident `"..."`/`` `...` ``/`[...]`, word run, symbol ทีละตัว
+    - CLAUSE_1 (select/from/where/group/order/having/limit/...) ขึ้นบรรทัดใหม่ · CLAUSE_2 (group by/order by/insert into/delete from)
+    - JOIN: ขึ้นบรรทัดก่อน INNER/LEFT/... + **`JOIN_PREFIX` กัน `INNER\nJOIN` แตกบรรทัด** (join ที่ตามหลัง modifier ไม่ขึ้นบรรทัดซ้ำ)
+    - AND/OR ขึ้นบรรทัด+ย่อหน้า · comma แตกบรรทัดใน select list · เก็บกวาด ws ท้ายบรรทัด + ยุบบรรทัดว่างซ้อน
+  · UI `src\app\sql\page.tsx` (client, ไม่ต้องอัปไฟล์): 2 ช่อง (วาง↔ผล) live + toggle keyword ตัวใหญ่ + เลือกย่อหน้า (2/4/tab) + ตัวอย่าง/ล้าง/คัดลอก/ดาวน์โหลด .sql
+  · verify 2 ชั้น: (1) **Node test 39/39 ผ่าน** — เน้น **killer test "เนื้อ token คงเดิม"**: format แล้วตัด whitespace ออก
+    ต้องเท่าต้นฉบับเป๊ะ (ปิด upper) / เท่าแบบ case-insensitive (เปิด upper) พิสูจน์ว่าไม่ทำ query เพี้ยน — ครอบ `->>`/`::`/`!=`/`<=`/`3.14`/
+    `json->'k'->>'v'`/`arr[1]`/`a||b`/`x%y`/string escape `''`/comment · + INNER JOIN & LEFT OUTER JOIN บรรทัดเดียว
+    (2) **Chrome UI จริง**: sample query → semanticSafe=true (เนื้อไม่เพี้ยน), keyword เป็นตัวใหญ่, FROM/WHERE/GROUP/ORDER ขึ้นบรรทัด,
+    INNER JOIN บรรทัดเดียว (ไม่แตก), AND ย่อหน้า, string `'active'` ครบ, ดาวน์โหลด .sql blob มีขนาด · **console สะอาด ไม่มี error/hydration**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀 · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, จัดรูป SQL 🗃️, สร้าง QR 🔳)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️ · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, สร้าง QR 🔳)
