@@ -272,8 +272,20 @@ flow:
     addSource, by-position, invariant outputRows===inputRows (สุ่ม 5 ไฟล์) · (2) **Chrome UI**: drop 2 CSV คอลัมน์เรียงต่างกัน
     (alpha `tracking,kg,cbm` · beta `cbm,tracking,kg`) → รวม 3 แถว, header=tracking,kg,cbm, แถว beta = TH003|30|2.0 (จับตามชื่อ ไม่เลื่อน),
     Excel = PK magic 16KB ชื่อ `alpha-รวม.xlsx`, addSource → คอลัมน์ "ไฟล์ต้นทาง" ติดถูก (alpha/beta) · console สะอาด
+- 2026-07-07 — **เครื่องมือที่ 11 พร้อมใช้: เข้ารหัส/ถอดรหัส 🔡** (`/encode`) — dev quick-win · ปิด 2 รายการ registry ทีเดียว (base64 + url-encode)
+  · use-case: เช็ค payload/token ของ MOMO/Supabase, escape ค่าใส่ query string, อ่าน URL ที่ถูก encode
+  · engine `src\lib\encode\encode.ts` (pure): `runEncode(input, mode, dir, opts)` → 2 โหมด (base64/url) × 2 ทิศ (encode/decode)
+    - **Base64 เขียนเองด้วย byte table** (ไม่พึ่ง btoa/atob ที่พังกับ non-ASCII) → `TextEncoder`→bytes→base64 · decode ใช้ `TextDecoder(fatal:true)` (UTF-8 พัง = throw บอกชัด ไม่คืนขยะ)
+    - รองรับ **Base64URL** (`- _` ไม่มี padding — ใช้ใน JWT/URL) · decode auto-detect ทั้ง standard + url-safe + ตัด whitespace
+    - URL: `encodeURIComponent` (default, escape ทั้งค่า) vs `encodeURI` (คงโครง URL) · error → ข้อความไทย, ไม่ throw หลุด UI
+  · UI `src\app\encode\page.tsx` (client, ไม่ต้องอัปไฟล์): แท็บ base64/url + toggle เข้ารหัส/ถอดรหัส + ตัวเลือกต่อโหมด · 2 ช่อง input↔output live +
+    ปุ่ม "↔ สลับเข้า" (เอาผลกลับเป็น input + สลับทิศ = เช็ค round-trip เร็ว) + ตัวอย่าง/ล้าง/คัดลอก + นับ bytes + กล่องแดงตอน decode พัง
+  · verify 2 ชั้น: (1) **Node test 45/45 ผ่าน**: base64 ตรงกับ `Buffer.toString("base64")` ทุกเคส (รวมไทย/emoji 🚛📦),
+    round-trip ครบทุก mode, Base64URL ไม่มี +/=, decode เสีย→ok=false, url encode/decode ไทย · (2) **Chrome UI**: `Man`→`TWFu` (3→4 bytes),
+    สลับเข้า→ถอดกลับได้ `Man` (ทิศเปลี่ยนเป็นถอดรหัส), base64 เสีย→กล่องแดง "มีอักขระที่ไม่ใช่ Base64" output ว่าง,
+    URL encode ไทย: เว้นวรรค→%20 & →%26 ไทย→%E0%B8 round-trip กลับต้นฉบับ · console สะอาด
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩 · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, VAT/กำไร 🧮, Base64/URL encode 🔡)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡 · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, VAT/กำไร 🧮, ทดสอบ Regex 🔤)

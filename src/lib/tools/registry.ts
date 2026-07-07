@@ -110,8 +110,8 @@ export const TOOLS: Tool[] = [
   { id: "json-format", name: "จัดรูปแบบ JSON", desc: "วาง JSON → beautify/minify + เรียง key + จับ JSON เสียบอกบรรทัด (เช็ค payload MOMO/Supabase)", icon: "🧬", category: "dev", href: "/json", status: "ready", keywords: ["json", "format", "beautify", "minify", "จัดรูป", "ย่อ", "pretty", "api", "payload", "momo", "supabase"] },
   { id: "sql-format", name: "จัดรูปแบบ SQL", desc: "จัด SQL ให้อ่านง่าย", icon: "🗃️", category: "dev", status: "soon", keywords: ["sql", "format"] },
   { id: "regex-test", name: "ทดสอบ Regex", desc: "ลองรูปแบบการค้นหาข้อความ", icon: "🔤", category: "dev", status: "soon", keywords: ["regex", "pattern"] },
-  { id: "base64", name: "แปลง Base64", desc: "เข้ารหัส/ถอดรหัส Base64", icon: "🔡", category: "dev", status: "soon", keywords: ["base64", "encode", "decode"] },
-  { id: "url-encode", name: "เข้ารหัส / ถอดรหัส URL", desc: "encode/decode URL", icon: "🔗", category: "dev", status: "soon", keywords: ["url", "encode", "decode"] },
+  { id: "base64", name: "แปลง Base64", desc: "เข้ารหัส/ถอดรหัส Base64 (รองรับ UTF-8/ไทย + Base64URL) — เช็ค payload/token ของ MOMO/Supabase", icon: "🔡", category: "dev", href: "/encode", status: "ready", keywords: ["base64", "encode", "decode", "เข้ารหัส", "ถอดรหัส", "token", "payload", "base64url"] },
+  { id: "url-encode", name: "เข้ารหัส / ถอดรหัส URL", desc: "encode/decode URL — escape ค่าใส่ query string หรืออ่าน URL ที่ถูก encode", icon: "🔗", category: "dev", href: "/encode", status: "ready", keywords: ["url", "encode", "decode", "escape", "query", "uri", "เข้ารหัส", "ถอดรหัส"] },
 
   // ---- เครื่องคำนวณ (soon) ----
   { id: "vat", name: "คำนวณ VAT", desc: "คิดภาษีมูลค่าเพิ่ม 7%", icon: "🧮", category: "calc", status: "soon", keywords: ["vat", "ภาษี", "7%"] },
