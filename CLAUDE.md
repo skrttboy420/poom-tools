@@ -144,5 +144,20 @@ flow:
     - พี่แต้ม (iTAM): header อยู่แถว 0, container ต่อแถว (คอลัมน์ 0, มีเฉพาะแถวแรก), tracking คอลัมน์ 9
     - MOMO: header อยู่แถว 5, มี summary block แถว 2-3 (CONTAINER NAME อยู่ตรงนี้ ไม่ใช่ต่อแถว),
       มีแถว subtotal/grand total ปน (tracking ว่าง → diff engine ข้ามให้อัตโนมัติ), tracking คอลัมน์ 7
-- **ถัดไป (STEP 3 phase 2 / roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
+- 2026-07-07 — **fix Reconciler result table**: ตารางผลไม่เลื่อน/ไม่กางทุกแถว → ครอบด้วยกล่อง
+  `max-h-[65vh] overflow-auto` + `thead` เป็น `sticky top-0` (หัวตารางค้าง) + ตัวนับ "แสดง N แถว"
+  · verify ใน Chrome: เลื่อนดูครบทุกแถว หัวตารางไม่หาย (commit 66cdd2b)
+- 2026-07-07 — **STEP 4 (Gap Finder) เสร็จ + verify แล้ว**: หน้า `/gap` — เครื่องมือ **ตรวจไฟล์เดียว**
+  หาข้อมูลหาย/เป็น 0 (ตอบโจทย์ปัญหา MOMO ทิ้งข้อมูล 30-40%) · client-side ล้วน ไม่แตะ Supabase
+  · engine `src/lib/reconcile/gap.ts` (pure): `findGaps(dataRows, checks, opts)` → หาแต่ละแถว/ช่อง:
+    `missing-key` (tracking หาย) · `zero`/`blank`/`invalid` (ตัวเลข 0/ว่าง/ผิดรูป) · `dup-key` (tracking ซ้ำ)
+    - ตัดแถวว่างทั้งแถวออกเอง (isDataRow) · เรียงแถวหนักสุดขึ้นก่อน · `gapToCsv` export เฉพาะแถวมีปัญหา
+  · UI reuse parse/detect/columns ของ reconcile: อัปโหลด 1 ไฟล์ → เลือก header → ติ๊กฟิลด์ที่จะตรวจ
+    (container ปิด default กันสัญญาณลวง) → chips สรุปแยกชนิด + filter + ตารางไฮไลต์ช่องเสีย + CSV
+  · verify Chrome จริง 2 ไฟล์: (1) MOMO → 5 แถวจริง, จับ missing-tracking + blank ถูก
+    (2) GZE 842 แถว (iTAM) → ตัดแถวว่าง 718 เหลือ 124 แถวจริง, จับ dup ถูก (`KY...-25` ซ้ำ 70 ครั้ง),
+    grand-total row (ไม่มี tracking) sort ขึ้นบนสุด · ไม่มี console error
+  · เพิ่มลิงก์ในหน้าหลัก `src/app/page.tsx`
+- **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · เพิ่ม drag-drop upload · handle หลาย sheet ดีขึ้น
+  · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer

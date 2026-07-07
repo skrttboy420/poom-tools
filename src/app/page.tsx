@@ -41,6 +41,18 @@ export default async function Home() {
                   <span className="text-neutral-400">→</span>
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/gap"
+                  className="flex items-center justify-between rounded-lg border border-black/10 px-3 py-2 transition hover:border-black/30 dark:border-white/10 dark:hover:border-white/30"
+                >
+                  <span>
+                    <span className="font-medium">Gap Finder</span>
+                    <span className="ml-2 text-neutral-500">จับข้อมูลหาย/เป็น 0 ในไฟล์เดียว (เช่น MOMO)</span>
+                  </span>
+                  <span className="text-neutral-400">→</span>
+                </Link>
+              </li>
               <li className="px-3 text-xs text-neutral-400">
                 • DB probe / table-health / migration tracker (roadmap)
               </li>
