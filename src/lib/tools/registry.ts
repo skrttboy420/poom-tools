@@ -107,7 +107,7 @@ export const TOOLS: Tool[] = [
   { id: "barcode", name: "สร้างบาร์โค้ด", desc: "สร้างบาร์โค้ดจากรหัส", icon: "▮", category: "office", status: "soon", keywords: ["barcode", "บาร์โค้ด"] },
 
   // ---- สำหรับโปรแกรมเมอร์ (soon) ----
-  { id: "json-format", name: "จัดรูปแบบ JSON", desc: "beautify / minify JSON", icon: "🧬", category: "dev", status: "soon", keywords: ["json", "format", "beautify"] },
+  { id: "json-format", name: "จัดรูปแบบ JSON", desc: "วาง JSON → beautify/minify + เรียง key + จับ JSON เสียบอกบรรทัด (เช็ค payload MOMO/Supabase)", icon: "🧬", category: "dev", href: "/json", status: "ready", keywords: ["json", "format", "beautify", "minify", "จัดรูป", "ย่อ", "pretty", "api", "payload", "momo", "supabase"] },
   { id: "sql-format", name: "จัดรูปแบบ SQL", desc: "จัด SQL ให้อ่านง่าย", icon: "🗃️", category: "dev", status: "soon", keywords: ["sql", "format"] },
   { id: "regex-test", name: "ทดสอบ Regex", desc: "ลองรูปแบบการค้นหาข้อความ", icon: "🔤", category: "dev", status: "soon", keywords: ["regex", "pattern"] },
   { id: "base64", name: "แปลง Base64", desc: "เข้ารหัส/ถอดรหัส Base64", icon: "🔡", category: "dev", status: "soon", keywords: ["base64", "encode", "decode"] },

@@ -205,9 +205,17 @@ flow:
     · accept `.xlsx,.xls,.csv,.tsv,.txt` · label โชว์ชื่อไฟล์ปัจจุบันเมื่อมีไฟล์แล้ว
   · verify Chrome จริงทั้ง 3 หน้า (สร้าง File+DataTransfer แล้ว dispatch DragEvent): dragover → ไฮไลต์ emerald + emoji 📥 ขึ้น,
     drop → parse ไฟล์เข้าจริง (header preview + auto-detect ขึ้นครบ), reconcile รับ drop ได้ทั้งฝั่ง A และ B · console สะอาด ไม่มี error
+- 2026-07-07 — **เครื่องมือที่ 6 พร้อมใช้: จัดรูปแบบ JSON** (`/json`) — dev quick-win (เช็ค payload MOMO API / Supabase)
+  · engine `src\lib\json\format.ts` (pure): `formatJson(input, indent, sortKeys)` / `minifyJson(input, sortKeys)` → `JsonResult` (ok/error)
+    - indent: "2"|"4"|"tab" · `sortKeysDeep` เรียง key ทุกชั้น (array คงลำดับ) · error ดึงบรรทัด/คอลัมน์จากข้อความ JSON.parse
+      (รองรับทั้ง "(line L column C)" ใหม่ + "position N" เดิม แล้ว map เป็นบรรทัด/คอลัมน์เอง) · stats: root type/จำนวน key ชั้นบน/key ทั้งหมด/ความลึก/ขนาด
+  · UI `src\app\json\page.tsx` (client, ไม่ต้องอัปไฟล์): 2 ช่อง (วาง↔ผล) live · ปุ่มจัดรูป/ย่อ + เลือก indent + เรียง key + ตัวอย่าง/ล้าง/คัดลอก/ดาวน์โหลด .json
+    · JSON เสีย = โชว์กล่องแดง + บอกบรรทัด/คอลัมน์
+  · verify Chrome จริง: `{"b":2,"a":1,"nested":{"z":[3,1,2]}}` → beautify 2 ช่องถูก, stats (key ชั้นบน 3/ทั้งหมด 4/ลึก 4) ถูก,
+    เรียง key → a,b,nested (array คงเดิม), minify → บรรทัดเดียว, JSON comma หาย → "ราวบรรทัด 4 คอลัมน์ 3" ถูก · console สะอาด
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
   · **จากบรีฟ (ยังไม่ทำ):** ปุ่มสลับ dark/light เอง (ตอนนี้ตาม system อย่างเดียว) · ประวัติการใช้งาน (history) ·
     แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload · ถัดไปที่คุ้ม: ลบข้อมูลซ้ำ ♻️, เทียบ Invoice↔Packing 🧾)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON · ถัดไปที่คุ้ม: ลบข้อมูลซ้ำ ♻️, เทียบ Invoice↔Packing 🧾)
