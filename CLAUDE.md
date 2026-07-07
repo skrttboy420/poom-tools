@@ -234,8 +234,21 @@ flow:
     ผลลัพธ์ = chips สรุป (แถวเข้า/กลุ่มซ้ำ/แถวที่จะลบ/เหลือหลังลบ/ข้ามคีย์ว่าง) + การ์ดรายกลุ่ม (เขียว=เก็บ แดง=ลบ ขีดฆ่า) + ดาวน์โหลด CSV
   · verify Chrome จริง (CSV `tracking,box,weight` 5 แถวจริง + ซ้ำ): exact-row → กลุ่มซ้ำ 2, ลบ 2, เหลือ 5,
     **แถว multi-box `KY001,2,6` ไม่ถูกจับซ้ำ** (ข้อมูลไม่หาย) · by-columns บน tracking → กลุ่มซ้ำ 2, ลบ 3, เหลือ 4 (KY001 รวมทุกกล่องเพราะผู้ใช้เลือกคีย์ tracking เอง) · console สะอาด
+- 2026-07-07 — **เครื่องมือที่ 8 พร้อมใช้: แปลง CSV ↔ Excel 🔄** (`/csv-excel`) — quick-win + โบนัสซ่อมไฟล์ MOMO
+  · engine `src\lib\convertfile\convertfile.ts` (pure): reuse `parseFile` robust reader (ซ่อม zip เพี้ยนได้) →
+    `rowsToCsv` (papaparse unparse — escape/quote ครบ) · `rowsToXlsx(rows, sheetName)` · `sheetsToXlsx(sheets)` (หลายชีต + กันชื่อชีตซ้ำ/อักขระต้องห้าม/ตัด 31 ตัว) ·
+    `sheetStats` (นับ nonEmptyRows กันแถวว่างท้ายไฟล์) · `changeExt`
+    - **กับดัก SheetJS:** `XLSX.write({type:"array"})` คืน **ArrayBuffer ไม่ใช่ Uint8Array** → ห่อ `new Uint8Array(out)` ใน `writeXlsxBytes` ให้ type ตรงจริง
+    - เพิ่ม `downloadBlob(filename, data, mime)` ใน `export.ts` (normalize เป็น Uint8Array<ArrayBuffer> เลี่ยง strictness ของ TS 5.7) สำหรับดาวน์โหลด binary
+  · **โบนัส:** อัปไฟล์ xlsx เพี้ยน (MOMO) → parseFile ซ่อมให้ → export กลับเป็น `.xlsx` มาตรฐานได้เลย
+  · UI `src\app\csv-excel\page.tsx` (client): อัปไฟล์ → badge via (ซ่อมไฟล์/csv/xlsx) → เลือกชีต (ถ้าหลายชีต) → ปุ่มดาวน์โหลด
+    ทิศทางสลับตามชนิดไฟล์เข้า (csv เข้า→ปุ่มเขียว Excel · xlsx เข้า→ปุ่มเขียว CSV) + "ทั้งไฟล์เป็น Excel" ตอนหลายชีต + พรีวิว 15 แถว (sticky index)
+  · verify 2 ชั้น: (1) **Node round-trip test จริง 17/17 ผ่าน** (Node 24 type-strip รัน engine ตรง ๆ): csv→rows→xlsx→อ่านกลับ→csv
+    ข้อมูลเดิมเป๊ะ — ไทยไม่เพี้ยน, ตัวเลขยัง number, quote+comma escape ถูก, ชื่อชีต sanitize (`Data:1?`→`Data_1_`), ชีตซ้ำ rename
+    (2) **Chrome UI จริง**: CSV เข้า→via csv, nonEmpty 4 (ตัดแถวว่างท้าย), ปุ่มเขียว=Excel · กด export → blob magic `PK\x03\x04` 16KB MIME xlsx ชื่อ `.csv`→`.xlsx` ·
+    เอา xlsx ที่ได้ drop กลับ → via xlsx, ข้อมูลครบ (แถว multi-box `KY001,2,6` ไม่หาย), ปุ่มเขียวสลับเป็น CSV · **console สะอาด ไม่มี error/hydration**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️ · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, CSV↔Excel)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄 · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, รวม/แยกไฟล์ Excel)

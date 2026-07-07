@@ -35,6 +35,18 @@ export function diffToJson(result: DiffResult): string {
 
 export function downloadText(filename: string, text: string, mime = "text/plain") {
   const blob = new Blob([text], { type: `${mime};charset=utf-8` });
+  triggerDownload(filename, blob);
+}
+
+// ดาวน์โหลดไฟล์ binary (เช่น .xlsx จาก SheetJS ที่เป็น Uint8Array)
+// normalize เป็น Uint8Array<ArrayBuffer> ก่อน (เลี่ยง ArrayBufferLike strictness ของ TS 5.7)
+export function downloadBlob(filename: string, data: Uint8Array | ArrayBuffer | string, mime: string) {
+  const part: BlobPart = typeof data === "string" ? data : new Uint8Array(data);
+  const blob = new Blob([part], { type: mime });
+  triggerDownload(filename, blob);
+}
+
+function triggerDownload(filename: string, blob: Blob) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;

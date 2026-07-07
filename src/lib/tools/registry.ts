@@ -78,7 +78,7 @@ export const TOOLS: Tool[] = [
   // ---- Excel & ข้อมูล (soon) ----
   { id: "merge-excel", name: "รวมหลายไฟล์ Excel", desc: "รวมหลายชีต/ไฟล์เป็นไฟล์เดียว", icon: "🧷", category: "excel", status: "soon", keywords: ["merge", "รวม", "excel"] },
   { id: "split-excel", name: "แยกไฟล์ Excel", desc: "แยกไฟล์ตามคอลัมน์/จำนวนแถว", icon: "✂️", category: "excel", status: "soon", keywords: ["split", "แยก", "excel"] },
-  { id: "csv-excel", name: "แปลง CSV ↔ Excel", desc: "แปลงกลับไปมาระหว่าง CSV กับ Excel", icon: "🔄", category: "excel", status: "soon", keywords: ["csv", "excel", "แปลง", "convert"] },
+  { id: "csv-excel", name: "แปลง CSV ↔ Excel", desc: "อัปไฟล์แล้วดาวน์โหลดเป็นอีกนามสกุล · อ่านไฟล์ Excel เพี้ยน (MOMO) แล้ว export กลับเป็น .xlsx มาตรฐานได้", icon: "🔄", category: "excel", href: "/csv-excel", status: "ready", keywords: ["csv", "excel", "xlsx", "แปลง", "convert", "แปลงไฟล์", "momo", "ซ่อมไฟล์"] },
   { id: "random-name", name: "สุ่มรายชื่อ", desc: "สุ่มเลือกรายชื่อจากลิสต์", icon: "🎲", category: "excel", status: "soon", keywords: ["random", "สุ่ม", "รายชื่อ"] },
 
   // ---- งานเอกสาร (soon) ----
