@@ -258,8 +258,22 @@ flow:
   · verify 2 ชั้น: (1) **Node test 15/15 ผ่าน**: splitByColumn (TU-A รวม 3 นับ trim, `(ว่าง)` แยกถูก, ผลรวม = inputRows ไม่หาย),
     splitByRows (2+2+1 = 3 ก้อน, ชื่อ `1-2`/`5-5`), chunk 0 กันเป็น 1 · (2) **Chrome UI**: auto-guess = container, แยก 3 กลุ่ม
     (TU-A 3/TU-B 1/(ว่าง) 2, รวม 6 = แถวเข้า) · Excel ทั้งไฟล์ = PK magic 18KB · CSV ต่อกลุ่มขึ้นต้น header, ชื่อ `packing-TU-A.csv` · console สะอาด
+- 2026-07-07 — **เครื่องมือที่ 10 พร้อมใช้: รวมหลายไฟล์ Excel** (`/merge`) — คู่กับ split (split=แยก1→หลาย · merge=รวมหลาย→1)
+  · use-case: รวม packing list หลายตู้/หลายไฟล์ (ฟอร์แมตเดียวกัน) เป็นไฟล์มาสเตอร์เดียว
+  · engine `src\lib\merge\merge.ts` (pure): `mergeFiles(inputs, {mode, addSource})` → 2 โหมด:
+    - **by-header** (default): สร้าง union คอลัมน์ **จับตามชื่อหัวตาราง** (normalize trim+lowercase) → กันไฟล์คอลัมน์สลับ/หัวตารางไม่ตรง
+      คอลัมน์ที่บางไฟล์ไม่มี → เติม `null` (ไม่ทำข้อมูลเลื่อน) · นับ `addedColumns` = คอลัมน์ที่ไฟล์แรกไม่มี
+    - **by-position**: เรียงตามตำแหน่ง (width = คอลัมน์มากสุด) เหมาะไฟล์ฟอร์แมตเป๊ะ
+    - `addSource` = เพิ่มคอลัมน์ "ไฟล์ต้นทาง" หน้าสุด · **invariant: outputRows === inputRows เสมอ (ไม่ทิ้งข้อมูล)**
+  · `src\components\FileDropzone.tsx`: เพิ่ม prop `multiple` + `onFiles(File[])` (backward-compat — caller เดิมใช้ `onFile` ได้เหมือนเดิม)
+  · UI `src\app\merge\page.tsx` (client): ลากหลายไฟล์พร้อมกัน → ลิสต์ไฟล์ (เลือกชีต/แถวหัวตาราง/ลบรายไฟล์ได้) → เลือกโหมด + ติ๊ก addSource →
+    "รวมไฟล์" → chips (ไฟล์/แถวเข้ารวม/แถวออก/คอลัมน์/คอลัมน์เพิ่ม) + ตารางตัวอย่าง (sticky header) + ดาวน์โหลด Excel/CSV
+  · verify 2 ชั้น: (1) **Node test 22/22 ผ่าน**: by-header จับตามชื่อ (beta คอลัมน์สลับ→ไม่เลื่อน), union คอลัมน์เพิ่มเติม null,
+    addSource, by-position, invariant outputRows===inputRows (สุ่ม 5 ไฟล์) · (2) **Chrome UI**: drop 2 CSV คอลัมน์เรียงต่างกัน
+    (alpha `tracking,kg,cbm` · beta `cbm,tracking,kg`) → รวม 3 แถว, header=tracking,kg,cbm, แถว beta = TH003|30|2.0 (จับตามชื่อ ไม่เลื่อน),
+    Excel = PK magic 16KB ชื่อ `alpha-รวม.xlsx`, addSource → คอลัมน์ "ไฟล์ต้นทาง" ติดถูก (alpha/beta) · console สะอาด
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️ · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, รวมหลายไฟล์ Excel 🧩)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩 · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, VAT/กำไร 🧮, Base64/URL encode 🔡)

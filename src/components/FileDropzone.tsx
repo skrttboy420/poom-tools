@@ -6,12 +6,16 @@ import { useRef, useState } from "react";
 // ลดขั้นตอน: ลากไฟล์จาก Explorer มาวางได้เลย ไม่ต้องกดเปิด dialog
 export default function FileDropzone({
   onFile,
+  onFiles,
+  multiple = false,
   accept,
   busy = false,
   label,
   className = "",
 }: {
-  onFile: (file: File | undefined) => void;
+  onFile?: (file: File | undefined) => void;
+  onFiles?: (files: File[]) => void; // ใช้คู่กับ multiple — รับหลายไฟล์พร้อมกัน
+  multiple?: boolean;
   accept?: string;
   busy?: boolean;
   label: string;
@@ -21,6 +25,13 @@ export default function FileDropzone({
   const [over, setOver] = useState(false);
 
   const pick = () => inputRef.current?.click();
+
+  // แจกไฟล์ที่ได้ (จาก drop หรือ input) ไปตามโหมด single/multiple
+  const emit = (list: FileList | null) => {
+    const files = list ? Array.from(list) : [];
+    if (multiple) onFiles?.(files);
+    else onFile?.(files[0]);
+  };
 
   return (
     <div
@@ -45,8 +56,7 @@ export default function FileDropzone({
       onDrop={(e) => {
         e.preventDefault();
         setOver(false);
-        const f = e.dataTransfer.files?.[0];
-        if (f) onFile(f);
+        emit(e.dataTransfer.files);
       }}
       className={`flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed px-3 py-6 text-center text-sm transition ${
         over
@@ -58,9 +68,10 @@ export default function FileDropzone({
         ref={inputRef}
         type="file"
         accept={accept}
+        multiple={multiple}
         className="hidden"
         onChange={(e) => {
-          onFile(e.target.files?.[0]);
+          emit(e.target.files);
           e.target.value = ""; // เคลียร์เพื่อให้เลือกไฟล์เดิมซ้ำแล้ว onChange ยิงอีกครั้ง
         }}
       />
