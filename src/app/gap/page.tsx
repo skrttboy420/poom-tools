@@ -56,7 +56,9 @@ export default function GapPage() {
   const [state, setState] = useState<FileState | null>(null);
   const [checks, setChecks] = useState<GapCheck[]>(() => defaultChecks());
   const [trimKey, setTrimKey] = useState(true);
-  const [checkDupKey, setCheckDupKey] = useState(true);
+  // packing list ปกติ 1 tracking แตกได้หลายกล่อง (หลายแถว) → tracking ซ้ำเป็นเรื่องปกติ
+  // เปิดเฉพาะไฟล์ที่ควรมี 1 tracking = 1 แถว (เช่น MOMO) → default ปิดไว้กัน false positive
+  const [checkDupKey, setCheckDupKey] = useState(false);
   const [zeroIsProblem, setZeroIsProblem] = useState(true);
   const [blankIsProblem, setBlankIsProblem] = useState(true);
   const [result, setResult] = useState<GapResult | null>(null);
@@ -311,9 +313,9 @@ export default function GapPage() {
                 <input type="checkbox" checked={blankIsProblem} onChange={(e) => setBlankIsProblem(e.target.checked)} />
                 นับค่าว่างเป็นปัญหา
               </label>
-              <label className="flex items-center gap-2">
+              <label className="flex items-center gap-2" title="เปิดเฉพาะไฟล์ที่ 1 tracking = 1 แถว (เช่น MOMO) — packing list ปกติ 1 tracking แตกหลายกล่องได้">
                 <input type="checkbox" checked={checkDupKey} onChange={(e) => setCheckDupKey(e.target.checked)} />
-                ตรวจ tracking ซ้ำ
+                ตรวจ tracking ซ้ำ <span className="text-neutral-400">(เฉพาะไฟล์ 1 tracking/แถว)</span>
               </label>
               <label className="flex items-center gap-2">
                 <input type="checkbox" checked={trimKey} onChange={(e) => setTrimKey(e.target.checked)} />
