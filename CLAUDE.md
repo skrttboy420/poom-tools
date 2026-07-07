@@ -181,8 +181,19 @@ flow:
   · UI `src/app/cbm/page.tsx` (client, ไม่ต้องอัปไฟล์): ตารางกรอกหลายรายการ (เพิ่ม/ลบแถว) → live totals + คัดลอกสรุป + export CSV
   · verify Chrome จริง: กรอก A(40×30×20 ×10)=0.24, B(50×50×50 ×2 น.15)=0.25 → รวม 0.49 CBM, 12 กล่อง, น้ำหนัก 30,
     ปริมาตร air÷6000 = 81.67, W/M = 490 · ตรงกับคำนวณมือทุกช่อง · export/copy ไม่ error · การ์ดหน้าแรกขึ้น "พร้อมใช้"
+- 2026-07-07 — **เครื่องมือที่ 4 พร้อมใช้: Data Cleaner / normalizer** (`/clean`) — ตอบ workflow "clean ก่อนเข้า Pacred"
+  · engine `src/lib/clean/clean.ts` (pure): `findCleanResult(dataRows, opts)` → operations:
+    trim ช่องว่าง · ยุบช่องว่างซ้ำ · ลบแถวว่างทั้งแถว · จัดรูปตัวเลข (ลบ comma แล้วแปลงเป็น number) ·
+    normalize tracking (trim+พิมพ์ใหญ่+ตัดช่องว่างใน) · ลบแถวซ้ำตาม key · คืน stats + ตัวอย่างการแก้ (cap 500) · `cleanToCsv`
+    - **ลบแถวซ้ำ = ปิด default** (บทเรียนเดียวกับ Gap): packing list ปกติ 1 tracking หลายกล่อง/หลายแถว → ลบ = ข้อมูลหาย
+  · UI `src/app/clean/page.tsx` (client): reuse parse/detect/columns → อัปโหลด → เลือก header → ติ๊ก operations +
+    auto-detect คอลัมน์ key/ตัวเลข (แก้เองได้) → ผลลัพธ์ = สรุป (เข้า→ออก, ลบว่าง/ซ้ำ, แก้กี่ช่อง) + chips แยกชนิด +
+    ตารางข้อมูลหลัง clean (sticky header) + ตัวอย่างก่อน→หลัง + ดาวน์โหลด CSV
+  · verify Chrome จริง (CSV เลอะ 5 แถว): "  ky001  "→KY001, "1,234.5"→1234.5, "0.24 "→0.24, " hello  world "→"hello world",
+    ลบแถวว่าง 2, แก้ 7 ช่อง (ยุบ1/ตัวเลข3/key3) · dedup ปิด = KY001-1 + KY002 ซ้ำ อยู่ครบ · เปิด dedup = ลบ KY002 ซ้ำ 1 (KY001-1 ไม่ถูกนับซ้ำกับ KY001) · export ไม่ error
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · เพิ่ม drag-drop upload · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
   · **จากบรีฟ (ยังไม่ทำ):** ปุ่มสลับ dark/light เอง (ตอนนี้ตาม system อย่างเดียว) · ประวัติการใช้งาน (history) ·
-    แชร์ผลลัพธ์ · drag-drop upload · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว (เริ่มจากที่ภูมใช้จริง: CBM, Data Cleaner)
+    แชร์ผลลัพธ์ · drag-drop upload · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
+    (✅ ทำแล้ว: CBM, Data Cleaner · ถัดไปที่คุ้ม: แปลงหน่วย ⚖️, ลบข้อมูลซ้ำ ♻️, เทียบ Invoice↔Packing 🧾)

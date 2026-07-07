@@ -65,7 +65,7 @@ export const TOOLS: Tool[] = [
 
   // ---- จัดระเบียบ & ตรวจข้อมูล (soon) ----
   { id: "dedup", name: "ลบข้อมูลซ้ำ", desc: "หา/ลบแถวซ้ำในไฟล์ตามคอลัมน์ที่เลือก", icon: "♻️", category: "clean", status: "soon", keywords: ["ซ้ำ", "duplicate", "dedup", "unique"] },
-  { id: "cleaner", name: "Data Cleaner / normalizer", desc: "จัดรูปข้อมูลก่อนเข้า Pacred (trim, แปลงหน่วย, normalize tracking)", icon: "🪥", category: "clean", status: "soon", keywords: ["clean", "normalize", "จัดรูป", "trim"] },
+  { id: "cleaner", name: "Data Cleaner / normalizer", desc: "จัดรูปข้อมูลก่อนเข้า Pacred: trim ช่องว่าง, จัดรูปตัวเลข, normalize tracking, ลบแถวว่าง", icon: "🪥", category: "clean", href: "/clean", status: "ready", keywords: ["clean", "normalize", "จัดรูป", "trim", "cleaner", "จัดระเบียบ", "ล้างข้อมูล"] },
   { id: "smart-filter", name: "ค้นหา & กรองข้อมูลอัจฉริยะ", desc: "กรอง/ค้นหาข้อมูลในไฟล์ใหญ่แบบเร็ว", icon: "🔎", category: "clean", status: "soon", keywords: ["filter", "search", "กรอง", "ค้นหา"] },
 
   // ---- โลจิสติกส์ (soon) ----
