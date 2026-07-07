@@ -61,7 +61,7 @@ export const TOOLS: Tool[] = [
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
   { id: "compare-word", name: "เปรียบเทียบ Word", desc: "หาความต่างของเอกสาร Word", icon: "📝", category: "compare", status: "soon", keywords: ["word", "docx", "เทียบ"] },
-  { id: "compare-json", name: "เปรียบเทียบ JSON", desc: "diff โครงสร้าง JSON 2 ชุด", icon: "🧬", category: "compare", status: "soon", keywords: ["json", "เทียบ", "diff"] },
+  { id: "compare-json", name: "เปรียบเทียบ JSON", desc: "วาง JSON 2 ชุด → ไล่ลึกทุกชั้น เห็นว่าอะไรเปลี่ยน/เพิ่ม/หาย ตรง path ไหน + export ความต่าง", icon: "🧬", category: "compare", href: "/compare-json", status: "ready", keywords: ["json", "เทียบ", "diff", "compare", "payload", "momo", "api", "เปรียบเทียบ", "ความต่าง"] },
 
   // ---- จัดระเบียบ & ตรวจข้อมูล (soon) ----
   { id: "dedup", name: "ลบข้อมูลซ้ำ", desc: "หากลุ่มแถวซ้ำ (ทั้งแถว หรือตามคอลัมน์) โชว์ให้ดูก่อนลบ แล้วดาวน์โหลดผลไม่มีซ้ำ", icon: "♻️", category: "clean", href: "/dedup", status: "ready", keywords: ["ซ้ำ", "duplicate", "dedup", "unique", "ลบซ้ำ", "แถวซ้ำ", "tracking ซ้ำ"] },

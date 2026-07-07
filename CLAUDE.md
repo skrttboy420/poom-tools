@@ -306,8 +306,19 @@ flow:
     ขาดทุน+หาร 0, sellFromMargin 80@20%=100 / @100%=0, sellFromMarkup 80@25%=100, round-trip margin↔markup, money/pct · (2) **Chrome UI**:
     VAT excl 100→107 · ถอด VAT 107→base 100/vat 7 · กำไร 80/100 = 20 (margin 20%/markup 25%) · sellFromMargin 80@20%=100 · markup 80@25%=100 ·
     margin 100% → ราคา 0 + เตือน "มาร์จิ้น ≥ 100% คิดไม่ได้" · search "กำไร" หน้าแรก → การ์ด "พร้อมใช้" → /calc · console สะอาด ไม่มี hydration
+- 2026-07-07 — **เครื่องมือที่ 14 พร้อมใช้: เปรียบเทียบ JSON 🧬** (`/compare-json`) — ปิด `compare-json` · ตรงหมวด "เทียบ" (use-case หลัก)
+  · engine `src\lib\jsondiff\jsondiff.ts` (pure): `diffJson(aText, bText)` → deep-diff ไล่ทุกชั้น (object ตาม union key · array ตาม index · leaf = same/changed) →
+    `DiffNode[]` {path, kind: added|removed|changed|same, left?, right?} · subtree ที่มีเฉพาะฝั่งเดียว = 1 node (added/removed ทั้งก้อน) · cap 5000 node
+    - `joinPath` อ่านง่าย (`o.items[1].cbm` · key อักขระแปลก → `["a b"]`) · `deepEqual` จัดกลุ่ม same · error บอกฝั่ง (A/B เสีย) ·
+      `previewValue` ย่อค่า one-line · `diffToCsv(nodes, includeSame=false)` export เฉพาะที่ต่าง
+  · UI `src\app\compare-json\page.tsx` (client, ไม่ต้องอัปไฟล์): 2 ช่องวาง JSON (A/B) → chips filter (ต่างทั้งหมด/เปลี่ยน/เพิ่ม/หาย/ทั้งหมด) +
+    ตาราง diff ไฮไลต์สี (เหลือง=เปลี่ยน เขียว=เพิ่ม(เฉพาะB) แดง=หาย(เฉพาะA)) sticky header + ปุ่ม export CSV · JSON เสีย = กล่องแดงบอกฝั่ง
+  · verify 2 ชั้น: (1) **Node test 35/35 ผ่าน**: primitive changed/same, added/removed key, nested path, array by index (สั้น/ยาวกว่า),
+    type mismatch=changed, subtree เท่ากัน=same, key อักขระแปลก→bracket, root primitive, JSON เสียบอกฝั่ง, diffToCsv ตัด same · (2) **Chrome UI**:
+    sample A↔B → ต่าง 4 (boxes 12→10, items[1].cbm 0.18→0.2 = เปลี่ยน 2 · note หาย · shipDate เพิ่ม), same 5, ทั้งหมด 9 · filter "ทั้งหมด"=9 แถว ·
+    export → `json-diff.csv` 174B type csv · JSON เสียฝั่ง A → กล่องแดง "ฝั่ง A" ซ่อนตาราง · console สะอาด ไม่มี hydration
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮 · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, จัดรูป SQL 🗃️, ดู/สร้าง QR 📱)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬 · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, จัดรูป SQL 🗃️, ค้นหา/กรองข้อมูล 🔎)
