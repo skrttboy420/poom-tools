@@ -64,7 +64,7 @@ export const TOOLS: Tool[] = [
   { id: "compare-json", name: "เปรียบเทียบ JSON", desc: "diff โครงสร้าง JSON 2 ชุด", icon: "🧬", category: "compare", status: "soon", keywords: ["json", "เทียบ", "diff"] },
 
   // ---- จัดระเบียบ & ตรวจข้อมูล (soon) ----
-  { id: "dedup", name: "ลบข้อมูลซ้ำ", desc: "หา/ลบแถวซ้ำในไฟล์ตามคอลัมน์ที่เลือก", icon: "♻️", category: "clean", status: "soon", keywords: ["ซ้ำ", "duplicate", "dedup", "unique"] },
+  { id: "dedup", name: "ลบข้อมูลซ้ำ", desc: "หากลุ่มแถวซ้ำ (ทั้งแถว หรือตามคอลัมน์) โชว์ให้ดูก่อนลบ แล้วดาวน์โหลดผลไม่มีซ้ำ", icon: "♻️", category: "clean", href: "/dedup", status: "ready", keywords: ["ซ้ำ", "duplicate", "dedup", "unique", "ลบซ้ำ", "แถวซ้ำ", "tracking ซ้ำ"] },
   { id: "cleaner", name: "Data Cleaner / normalizer", desc: "จัดรูปข้อมูลก่อนเข้า Pacred: trim ช่องว่าง, จัดรูปตัวเลข, normalize tracking, ลบแถวว่าง", icon: "🪥", category: "clean", href: "/clean", status: "ready", keywords: ["clean", "normalize", "จัดรูป", "trim", "cleaner", "จัดระเบียบ", "ล้างข้อมูล"] },
   { id: "smart-filter", name: "ค้นหา & กรองข้อมูลอัจฉริยะ", desc: "กรอง/ค้นหาข้อมูลในไฟล์ใหญ่แบบเร็ว", icon: "🔎", category: "clean", status: "soon", keywords: ["filter", "search", "กรอง", "ค้นหา"] },
 

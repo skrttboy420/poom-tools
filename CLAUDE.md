@@ -223,8 +223,19 @@ flow:
     + `suppressHydrationWarning` บน `<html>` (เพราะ script แก้ class ก่อน React hydrate) + render `<ThemeToggle/>` ระดับ layout (โผล่ทุกหน้า)
   · verify Chrome จริง (ระบบตั้ง dark): เริ่มต้น system→`.dark` bg มืด (พฤติกรรมเดิมคงอยู่), สว่าง→override เป็นขาวแม้ระบบมืด,
     มืด→บังคับมืด, persist หลัง reload (stored 'light' ยังสว่าง ไม่ flash), **ไม่มี console error / hydration warning** · คืน default (ลบ key) หลังเทส
+- 2026-07-07 — **เครื่องมือที่ 7 พร้อมใช้: ลบข้อมูลซ้ำ ♻️** (`/dedup`) — ตอบปรัชญา "ห้ามข้อมูลหาย"
+  · engine `src\lib\dedup\dedup.ts` (pure): `findDuplicates(dataRows, opts)` → `DedupResult` (groups + uniqueRows + stats)
+    - 2 โหมด: **exact-row** (ทั้งแถวเหมือนเป๊ะ — ปลอดภัยสุด) · **by-columns** (ซ้ำตามคอลัมน์ที่เลือก เช่น tracking)
+    - `keep: first|last` (เก็บแถวแรก/สุดท้ายของกลุ่ม) · `caseInsensitive`/`trimWhitespace` (normalize ก่อนเทียบ) ·
+      `ignoreEmptyKey` (แถวคีย์ว่าง = ไม่นับซ้ำ กัน subtotal/grand-total โดนจับ) · SEP `` กัน signature ปนกัน
+    - **ปรัชญา:** โชว์กลุ่มที่ซ้ำให้ดูก่อนแล้วค่อยเลือกลบ (ไม่ลบเงียบ ๆ) · `dedupToCsv` export เฉพาะ uniqueRows
+  · UI `src\app\dedup\page.tsx` (client): reuse parse/detect/columns/FileDropzone → อัปโหลด → เลือก header → เลือกโหมด
+    (by-columns โชว์ chips คอลัมน์ + เตือน amber เรื่อง packing list 1 tracking หลายกล่อง) → ตั้ง keep/normalize →
+    ผลลัพธ์ = chips สรุป (แถวเข้า/กลุ่มซ้ำ/แถวที่จะลบ/เหลือหลังลบ/ข้ามคีย์ว่าง) + การ์ดรายกลุ่ม (เขียว=เก็บ แดง=ลบ ขีดฆ่า) + ดาวน์โหลด CSV
+  · verify Chrome จริง (CSV `tracking,box,weight` 5 แถวจริง + ซ้ำ): exact-row → กลุ่มซ้ำ 2, ลบ 2, เหลือ 5,
+    **แถว multi-box `KY001,2,6` ไม่ถูกจับซ้ำ** (ข้อมูลไม่หาย) · by-columns บน tracking → กลุ่มซ้ำ 2, ลบ 3, เหลือ 4 (KY001 รวมทุกกล่องเพราะผู้ใช้เลือกคีย์ tracking เอง) · console สะอาด
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light · ถัดไปที่คุ้ม: ลบข้อมูลซ้ำ ♻️, เทียบ Invoice↔Packing 🧾)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️ · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, CSV↔Excel)
