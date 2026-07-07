@@ -66,7 +66,7 @@ export const TOOLS: Tool[] = [
   // ---- จัดระเบียบ & ตรวจข้อมูล (soon) ----
   { id: "dedup", name: "ลบข้อมูลซ้ำ", desc: "หากลุ่มแถวซ้ำ (ทั้งแถว หรือตามคอลัมน์) โชว์ให้ดูก่อนลบ แล้วดาวน์โหลดผลไม่มีซ้ำ", icon: "♻️", category: "clean", href: "/dedup", status: "ready", keywords: ["ซ้ำ", "duplicate", "dedup", "unique", "ลบซ้ำ", "แถวซ้ำ", "tracking ซ้ำ"] },
   { id: "cleaner", name: "Data Cleaner / normalizer", desc: "จัดรูปข้อมูลก่อนเข้า Pacred: trim ช่องว่าง, จัดรูปตัวเลข, normalize tracking, ลบแถวว่าง", icon: "🪥", category: "clean", href: "/clean", status: "ready", keywords: ["clean", "normalize", "จัดรูป", "trim", "cleaner", "จัดระเบียบ", "ล้างข้อมูล"] },
-  { id: "smart-filter", name: "ค้นหา & กรองข้อมูลอัจฉริยะ", desc: "กรอง/ค้นหาข้อมูลในไฟล์ใหญ่แบบเร็ว", icon: "🔎", category: "clean", status: "soon", keywords: ["filter", "search", "กรอง", "ค้นหา"] },
+  { id: "smart-filter", name: "ค้นหา & กรองข้อมูล", desc: "หา/กรองแถวในไฟล์ใหญ่ — ค้นเร็วทุกคอลัมน์ หรือตั้งเงื่อนไขหลายชั้น (AND/OR) แล้ว export ผลกรอง", icon: "🔎", category: "clean", href: "/filter", status: "ready", keywords: ["filter", "search", "กรอง", "ค้นหา", "หา", "เงื่อนไข", "tracking", "ตู้", "น้ำหนัก"] },
 
   // ---- โลจิสติกส์ (soon) ----
   { id: "invoice-vs-packing", name: "เทียบ Invoice กับ Packing List", desc: "เช็คว่า Invoice ตรงกับ Packing List ไหม", icon: "🧾", category: "logistics", status: "soon", keywords: ["invoice", "packing", "เทียบ", "ใบแจ้งหนี้"] },

@@ -317,8 +317,20 @@ flow:
     type mismatch=changed, subtree เท่ากัน=same, key อักขระแปลก→bracket, root primitive, JSON เสียบอกฝั่ง, diffToCsv ตัด same · (2) **Chrome UI**:
     sample A↔B → ต่าง 4 (boxes 12→10, items[1].cbm 0.18→0.2 = เปลี่ยน 2 · note หาย · shipDate เพิ่ม), same 5, ทั้งหมด 9 · filter "ทั้งหมด"=9 แถว ·
     export → `json-diff.csv` 174B type csv · JSON เสียฝั่ง A → กล่องแดง "ฝั่ง A" ซ่อนตาราง · console สะอาด ไม่มี hydration
+- 2026-07-07 — **เครื่องมือที่ 15 พร้อมใช้: ค้นหา & กรองข้อมูล 🔎** (`/filter`) — ปิด `smart-filter` · หา/กรองแถวในไฟล์ใหญ่
+  · engine `src\lib\filter\filter.ts` (pure): `applyFilter(header, dataRows, conds, {match, quick})` → กรองแบบ live
+    - 12 operator: contains/not-contains/equals/not-equals/starts/ends/empty/not-empty + ตัวเลข gt/gte/lt/lte (`OP_LABEL`, `NO_VALUE_OPS`, `NUMERIC_OPS`)
+    - `col: -1` = ทุกคอลัมน์ (some) · `match: all|any` = AND/OR ระหว่างเงื่อนไข · `quick` = ค้นเร็วทุกคอลัมน์ (AND เสมอ) ·
+      case-insensitive default (ติ๊ก Aa = สนพิมพ์เล็ก/ใหญ่) · ตัดแถวว่างทั้งแถว (total นับเฉพาะแถวจริง) · คงลำดับเดิม + `matchedIndexes`
+    - เงื่อนไขที่ยังไม่กรอกค่า = ถูกข้าม (ไม่กรองมั่ว) · **ไม่ทำข้อมูลหาย** (แค่กรองแสดง)
+  · UI `src\app\filter\page.tsx` (client): reuse parse/detect/columns/FileDropzone → อัปโหลด → เลือก header →
+    ช่องค้นเร็ว + ปุ่ม AND/OR + แถวเงื่อนไข (เลือกคอลัมน์/operator/ค่า/ติ๊ก case · เพิ่ม-ลบได้) → ตารางผล live (sticky header, cap 200 แถว) +
+    chip "เจอ N/รวม" + ดาวน์โหลดผลกรอง CSV
+  · verify 2 ชั้น: (1) **Node test 18/18 ผ่าน**: contains + case, numeric gt/lte, empty (0≠ว่าง), AND/OR, ทุกคอลัมน์, quick+cond,
+    ไม่มีเงื่อนไข→คืนทุกแถว, cond ค่าว่างถูกข้าม, starts/ends, not-equals · (2) **Chrome UI** (drop CSV 5 แถว):
+    โหลด 5/5 header ถูก · quick "TU-A" → 2 (KY001/KY002) · weight>5 → 3 (12/5.5/340) · export `packing-กรอง.csv` 72B type csv · console สะอาด
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬 · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, จัดรูป SQL 🗃️, ค้นหา/กรองข้อมูล 🔎)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎 · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, จัดรูป SQL 🗃️, สร้าง QR 🔳)
