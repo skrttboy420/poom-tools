@@ -284,8 +284,19 @@ flow:
     round-trip ครบทุก mode, Base64URL ไม่มี +/=, decode เสีย→ok=false, url encode/decode ไทย · (2) **Chrome UI**: `Man`→`TWFu` (3→4 bytes),
     สลับเข้า→ถอดกลับได้ `Man` (ทิศเปลี่ยนเป็นถอดรหัส), base64 เสีย→กล่องแดง "มีอักขระที่ไม่ใช่ Base64" output ว่าง,
     URL encode ไทย: เว้นวรรค→%20 & →%26 ไทย→%E0%B8 round-trip กลับต้นฉบับ · console สะอาด
+- 2026-07-07 — **เครื่องมือที่ 12 พร้อมใช้: ทดสอบ Regex 🔤** (`/regex`) — dev quick-win · ตรงกับงาน clean/parse ข้อมูล (ดึงเลข tracking/ตู้)
+  · engine `src\lib\regex\regex.ts` (pure): `runRegex(pattern, flags, text)` → list match + capture group (index/named) ·
+    auto เติม flag `g` ตอนหา (list ได้ทุก match แต่ UI โชว์ flag ตามผู้ใช้) · cap 1000 match กัน UI หน่วง · pattern เสีย → ok=false + error
+    - `runReplace(pattern, flags, text, replacement)` respect flag ผู้ใช้ (ไม่มี g = แทนอันแรก) รองรับ `$1 $<name>`
+    - `segmentText(text, matches)` ตัดข้อความเป็นชิ้นปกติ/match เพื่อไฮไลต์ (invariant: ประกอบกลับ = ต้นฉบับ · จัดการ zero-width match ไม่ค้าง)
+  · UI `src\app\regex\page.tsx` (client, ไม่ต้องอัปไฟล์): ช่อง pattern `/…/flags` + ปุ่ม flag (g/i/m/s/u มี hint) · 2 ช่อง ข้อความทดสอบ↔ไฮไลต์สด +
+    ตัวนับ match + ตาราง match (ตำแหน่ง/ข้อความ/กลุ่ม $1 $2 <name>) + พาเนล replace พับได้ (ดู output สด) · pattern ผิด = กล่องแดง
+  · verify 2 ชั้น: (1) **Node test 16/16 ผ่าน**: หา match + auto-global, capture/named group, flag i, pattern เสีย→ok=false,
+    replace (g/ไม่ g/$1$2/เสีย), segmentText ประกอบกลับ=ต้นฉบับ + zero-width ไม่ค้าง · (2) **Chrome UI**: sample `([A-Z]{2,})-?(\d+)` บนข้อความจริง →
+    4 match (abc พิมพ์เล็กถูกข้าม), กลุ่ม TU/12·KY/345·GZE/2025·TU/12 ถูก, ไฮไลต์ 4 จุด · replace `$2/$1` สลับกลุ่มได้ (TU-12→12/TU) ·
+    pattern `([A-Z` → กล่องแดง "Unterminated character class" ไฮไลต์ 0 · console สะอาด
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์ · ทยอยเปลี่ยน tool "soon" ให้เป็น ready ทีละตัว
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡 · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, VAT/กำไร 🧮, ทดสอบ Regex 🔤)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤 · ถัดไปที่คุ้ม: เทียบ Invoice↔Packing 🧾, VAT/กำไร 🧮, จัดรูป SQL 🗃️)
