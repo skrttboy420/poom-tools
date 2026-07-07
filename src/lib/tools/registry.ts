@@ -70,7 +70,7 @@ export const TOOLS: Tool[] = [
 
   // ---- โลจิสติกส์ (soon) ----
   { id: "invoice-vs-packing", name: "เทียบ Invoice กับ Packing List", desc: "เช็คว่า Invoice ตรงกับ Packing List ไหม", icon: "🧾", category: "logistics", status: "soon", keywords: ["invoice", "packing", "เทียบ", "ใบแจ้งหนี้"] },
-  { id: "cbm-calc", name: "คำนวณ CBM", desc: "คำนวณปริมาตร (คิว) จากกว้าง×ยาว×สูง", icon: "📐", category: "logistics", status: "soon", keywords: ["cbm", "คิว", "ปริมาตร", "volume"] },
+  { id: "cbm-calc", name: "คำนวณ CBM", desc: "คำนวณปริมาตร (คิว) จากกว้าง×ยาว×สูง × จำนวนกล่อง + น้ำหนักเชิงปริมาตร", icon: "📐", category: "logistics", href: "/cbm", status: "ready", keywords: ["cbm", "คิว", "ปริมาตร", "volume", "freight", "ค่าระวาง", "คำนวณ"] },
   { id: "container-load", name: "จัดเรียงสินค้าในตู้", desc: "ประเมินการโหลดตู้คอนเทนเนอร์", icon: "🚛", category: "logistics", status: "soon", keywords: ["container", "ตู้", "load", "โหลด"] },
   { id: "unit-convert", name: "แปลงหน่วย", desc: "กิโล/ปอนด์, นิ้ว/ซม. ฯลฯ", icon: "⚖️", category: "logistics", status: "soon", keywords: ["unit", "แปลงหน่วย", "kg", "lb", "cm", "inch"] },
   { id: "fx-rate", name: "คำนวณอัตราแลกเปลี่ยน", desc: "แปลงสกุลเงินตามเรตล่าสุด", icon: "💱", category: "logistics", status: "soon", keywords: ["fx", "exchange", "อัตราแลกเปลี่ยน", "เรต"] },

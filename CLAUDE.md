@@ -174,6 +174,13 @@ flow:
   · verify Chrome จริง: search "cbm"→1 รายการ (การ์ด CBM), กดดาว Gap Finder → เกิดหมวด ⭐ รายการโปรด + persist ข้ามการ reload,
     คลิกการ์ด Reconciler → ไป /reconcile · **ไม่มี console error / ไม่มี hydration warning** (โหลดใหม่แล้วเช็ค console สะอาด)
   · gate เขียว (tsc + lint) ก่อน commit
+- 2026-07-07 — **เครื่องมือที่ 3 พร้อมใช้: คำนวณ CBM** (`/cbm`) — soon → ready ตัวแรกตามแผนทยอยเปิด
+  · engine `src/lib/cbm/calc.ts` (pure): `computeLine`/`computeTotals`/`cbmToCsv` · หน่วย cm/m/inch (แปลงเป็นเมตรก่อนคูณ)
+    - CBM = (กว้าง×ยาว×สูง เมตร) × จำนวนกล่อง · น้ำหนักเชิงปริมาตร air = (กxยxส cm)/divisor (6000/5000) × qty
+    - W/M ทะเล = max(น้ำหนักจริง, CBM×1000)
+  · UI `src/app/cbm/page.tsx` (client, ไม่ต้องอัปไฟล์): ตารางกรอกหลายรายการ (เพิ่ม/ลบแถว) → live totals + คัดลอกสรุป + export CSV
+  · verify Chrome จริง: กรอก A(40×30×20 ×10)=0.24, B(50×50×50 ×2 น.15)=0.25 → รวม 0.49 CBM, 12 กล่อง, น้ำหนัก 30,
+    ปริมาตร air÷6000 = 81.67, W/M = 490 · ตรงกับคำนวณมือทุกช่อง · export/copy ไม่ error · การ์ดหน้าแรกขึ้น "พร้อมใช้"
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · เพิ่ม drag-drop upload · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
