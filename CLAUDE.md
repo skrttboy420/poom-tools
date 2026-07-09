@@ -486,6 +486,17 @@ flow:
     solo/null→1 ชิ้น, ตัวคั่นหลายตัวอักษร, error (คอลัมน์/ตัวคั่น), **invariant ต่อชิ้นกลับ=ค่าเดิม (200 แถว) + input ไม่ mutate**
     (2) **Chrome UI จริง** (CSV `tracking,combo,note` combo="TU-A/123"..): auto-guess = combo + "/" · แยก 3 คอลัมน์ (KY003 "TU-C/789/extra"→789+extra ไม่หาย, KY004 solo→1 ชิ้น) ·
     maxParts 2 → KY003=TU-C, "789/extra" (ต่อกลับ) · keepOriginal → คอลัมน์ combo เดิมยังอยู่ + คอลัมน์ใหม่ต่อท้าย · Excel `packing-แยกคอลัมน์.xlsx` PK magic 17KB · **console สะอาด**
+- 2026-07-10 — **เครื่องมือที่ 29 พร้อมใช้: รวมคอลัมน์ 🔗➡️** (`/combine-col`) — หมวด excel · **คู่กลับกับ /split-col** (แยก↔รวม)
+  · use-case จริง: ต่อค่าเป็น key ผสม (tracking+กล่อง เพื่อเทียบ/dedup), ต่อ ตู้+เลข เป็นรหัสเดียว, ต่อวัน/เดือน/ปี → แล้วเอาไป /reconcile /group ต่อ
+  · engine `src\lib\combinecol\combinecol.ts` (pure): `combineColumns(header, dataRows, cols, {separator, name, keepOriginals, trim, skipEmpty})` → ต่อค่าหลายคอลัมน์ตาม **ลำดับที่เลือก**
+    - **ปรัชญาไม่ทำแถวหาย:** จำนวนแถวเท่าเดิมเสมอ · default `keepOriginals` = เพิ่มคอลัมน์รวมท้าย (เก็บของเดิม ไม่ทิ้ง) · ปิด = โหมดแทนที่ (เอาคอลัมน์รวมไปตำแหน่งคอลัมน์แรกที่เลือก ตัดที่เหลือ)
+    - `skipEmpty` (default on) ข้ามชิ้นว่างกันตัวเชื่อมซ้ำ (A--B) · `trim` (default on) · `separator` ว่างได้ (ต่อชิด) · ชื่อ default = ชื่อหัวต้นทางต่อด้วย " + " · error (ไม่เลือกคอลัมน์) → คืนของเดิม
+  · UI `src\app\combine-col\page.tsx` (client): reuse parse/detect/columns/FileDropzone → อัปโหลด (เดาเลือก 2 คอลัมน์แรก) → **ลิสต์คอลัมน์ที่เลือกแบบมีลำดับ** (▲▼ สลับ/✕ ลบ) + ปุ่มคอลัมน์ทั้งหมด (กดเพิ่ม) +
+    ตัวเชื่อม (+ปุ่มลัด - / _ , เว้นวรรค ไม่มี) + ชื่อหัว + toggle keepOriginals/trim/skipEmpty → ตารางผล (คอลัมน์รวมไฮไลต์ indigo +🔗) + ดาวน์โหลด CSV/Excel
+  · verify 2 ชั้น: (1) **Node test 35/35 ผ่าน**: รวมพื้นฐาน, ชื่อ custom+ลำดับกลับ, replace (ติด/ไม่ติดกัน), skipEmpty on/off, separator ว่าง, trim on/off,
+    ตัวเลข→string, คอลัมน์เดียว, ซ้ำ 2 ครั้ง, error (ไม่เลือก/นอกช่วง), partial oob, **invariant แถวไม่เปลี่ยน + input ไม่ mutate**, ragged row
+    (2) **Chrome UI จริง** (CSV `ตู้,เลข,note`): default เลือก [ตู้,เลข] "-" → คอลัมน์ "ตู้ + เลข" = TU-A-123/TU-B-456/TU-C-789 (เก็บของเดิม) ·
+    keepOriginals off → header [ตู้ + เลข, note], TU-A-123 อยู่ตำแหน่งแรก ตัดต้นทาง · Excel `codes-รวมคอลัมน์.xlsx` PK magic 16KB · **console สะอาด**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
@@ -495,4 +506,4 @@ flow:
     - ต้องไฟล์จริงของภูม → **invoice-vs-packing 🧾** (คือ reconcile เฉพาะทาง — รอ format จริงก่อนค่อยทำ ไม่งั้นเดา schema ผิด)
     - ต้อง spec/network → container-load (3D packing), fx-rate (เรตสด)
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️, เติมค่าลงล่าง ⬇️, ดึงข้อมูลข้ามไฟล์ (VLOOKUP) 🔗, แยกคอลัมน์ ✂️➡️)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️, เติมค่าลงล่าง ⬇️, ดึงข้อมูลข้ามไฟล์ (VLOOKUP) 🔗, แยกคอลัมน์ ✂️➡️, รวมคอลัมน์ 🔗➡️)
