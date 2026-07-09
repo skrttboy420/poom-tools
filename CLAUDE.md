@@ -427,6 +427,19 @@ flow:
     dropEmptyRows นับ src อย่างเดียว (ค่าคงที่ไม่ rescue), empty specs, defaultSpecs identity round-trip, ดึงคอลัมน์ซ้ำ · (2) **Chrome UI จริง** (CSV 4 คอลัมน์ + แถวว่าง):
     default = 4 คอลัมน์ identity · เพิ่มค่าคงที่ container=TU-A + ตัดแถวว่าง → ตัดว่าง 2 เหลือ 3 แถว, TU-A ครบทุกแถว (ค่าคงที่ไม่ช่วยแถวว่างรอด) ·
     ▲ ขยับ container เหนือ note (ค่าเลื่อนตามถูก) · Excel `packing-คอลัมน์.xlsx` 16KB magic PK\x03\x04 · search หน้าแรกเจอการ์ด · **console สะอาด**
+- 2026-07-10 — **เครื่องมือที่ 24 พร้อมใช้: สรุปยอดแบบจัดกลุ่ม 🧮** (`/group`) — pivot เบา ๆ · ต่อยอดจาก /stats (ทั้งคอลัมน์ → ต่อกลุ่ม) ตรง use-case "รวมน้ำหนัก/CBM/กล่อง ต่อตู้"
+  · engine `src\lib\group\group.ts` (pure): `groupBy(header, dataRows, groupCols, aggs, {trim, ignoreEmptyKey})` → จัดกลุ่มตามคอลัมน์ (หลายชั้นได้) แล้วสรุป
+    - 7 ฟังก์ชันสรุป (`AggFn`): sum/avg/min/max (เฉพาะช่องตัวเลข ใช้ `parseNumeric` inline) · count (นับช่องมีค่า) · count-distinct (นับค่าไม่ซ้ำ) · first (ค่าแรกไม่ว่าง)
+    - **grand total** = คำนวณจากทุกแถวที่นับเข้ากลุ่มจริง (avg เป็น global sum/global count ไม่ใช่เฉลี่ยของเฉลี่ย) · คีย์ว่างโชว์ "(ว่าง)"
+    - `ignoreEmptyKey` (default UI เปิด) = ข้ามแถวคีย์ว่างทั้งหมด (กัน subtotal/grand-total ในไฟล์ปน) · `trim` จับกลุ่ม (default on: "TU-A" = " TU-A ") · ตัดแถวว่างทั้งแถวก่อน
+    - **invariant: ผลรวม count ของทุกกลุ่ม = countedRows** (ทุกแถวเข้ากลุ่มเดียว ไม่หาย/ไม่ซ้ำ) · `groupToCsv` (หัว + แถวกลุ่ม + แถวรวมท้าย)
+    - **หมายเหตุสถาปัตย์:** pure engine ต้อง self-contained (import แค่ *type* ผ่าน `@/`) → inline `parseNumeric` แทน import ค่าจริงจาก stats (ไม่งั้น Node type-strip test แก้ `@/` alias runtime ไม่ได้)
+  · UI `src\app\group\page.tsx` (client): reuse parse/detect/columns/FileDropzone → อัปโหลด → auto-guess (คีย์=container/ตู้, sum kg+cbm) →
+    เลือกคอลัมน์จัดกลุ่ม (chips หลายชั้น) + แถวสรุป (เลือกฟังก์ชัน×คอลัมน์ เพิ่ม/ลบ) + toggle ข้ามคีย์ว่าง → ตารางผล (sticky header + tfoot แถวรวมเขียวค้างล่าง) + ดาวน์โหลด CSV
+  · verify 2 ชั้น: (1) **Node test 48/48 ผ่าน**: sum/avg/min/max ต่อกลุ่ม + grand total, count vs count-distinct (tracking ซ้ำ), first (ข้ามว่าง),
+    sum ไม่มีตัวเลข=0/avg=null, คีย์หลายชั้น, trim จับกลุ่ม (+ปิด trim แยก 2), ตัดแถวว่าง, ignoreEmptyKey, invariant count รวม=countedRows, CSV+แถวรวม
+    (2) **Chrome UI จริง** (CSV container/kg/cbm 5 แถว + คีย์ว่าง 1): auto-guess = container + sum kg/cbm · เปิดข้ามคีย์ว่าง → 2 กลุ่ม (TU-A 17.5/0.34, TU-B 350/2.5, รวม 367.5/2.84 ข้าม 1) ·
+    ปิด → 3 กลุ่ม ((ว่าง) 1 แถว kg 3, รวม 5/370.5/2.94) · เปลี่ยนเป็น เฉลี่ย+นับไม่ซ้ำ → TU-A avg 8.75/distinct 2, total avg 74.1/distinct 5 · CSV `packing-สรุปกลุ่ม.csv` หัว+แถวรวมถูก · **console สะอาด**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
@@ -436,4 +449,4 @@ flow:
     - ต้องไฟล์จริงของภูม → **invoice-vs-packing 🧾** (คือ reconcile เฉพาะทาง — รอ format จริงก่อนค่อยทำ ไม่งั้นเดา schema ผิด)
     - ต้อง spec/network → container-load (3D packing), fx-rate (เรตสด)
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮)
