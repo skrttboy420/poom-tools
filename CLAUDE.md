@@ -497,6 +497,19 @@ flow:
     ตัวเลข→string, คอลัมน์เดียว, ซ้ำ 2 ครั้ง, error (ไม่เลือก/นอกช่วง), partial oob, **invariant แถวไม่เปลี่ยน + input ไม่ mutate**, ragged row
     (2) **Chrome UI จริง** (CSV `ตู้,เลข,note`): default เลือก [ตู้,เลข] "-" → คอลัมน์ "ตู้ + เลข" = TU-A-123/TU-B-456/TU-C-789 (เก็บของเดิม) ·
     keepOriginals off → header [ตู้ + เลข, note], TU-A-123 อยู่ตำแหน่งแรก ตัดต้นทาง · Excel `codes-รวมคอลัมน์.xlsx` PK magic 16KB · **console สะอาด**
+- 2026-07-10 — **เครื่องมือที่ 30 พร้อมใช้: ค้นหา-แทนที่ 🔁** (`/replace`) — หมวด excel · แก้ค่าซ้ำ ๆ ทั้งไฟล์ (bulk find & replace) · คู่กับ /clean /filter
+  · use-case จริง: ตู้พิมพ์ผิด TU-A → TU-01 ทั้งไฟล์, ลบ "-"/"N/A" เป็นว่าง, normalize ค่าซ้ำ ๆ ก่อนเข้า Pacred
+  · engine `src\lib\replacecell\replace.ts` (pure): `replaceInTable(header, dataRows, {find, replacement, mode, caseInsensitive, trimCompare, cols})` → 3 โหมด:
+    - **contains** (default) = แทนทุก substring ที่เจอในช่อง (regex escape find + `$`→`$$` กัน replacement ตีความ $) · **exact** = ทั้งช่องต้องตรงเป๊ะ (มี trimCompare) → แทนทั้งช่อง · **regex** = ใช้ regex ตรง ๆ + กลุ่มจับ $1 $2
+    - **ปรัชญาไม่แก้เงียบ:** คืน `cellsChanged`/`rowsAffected`/`samples` (cap 50 ก่อน→หลัง) ให้ดูก่อน · **แถวไม่หาย** (rows.length เท่าเดิม, input ไม่ mutate) · ข้ามช่องว่าง/null (ไม่สร้างค่าจากที่ว่าง) · `cols` จำกัดเฉพาะบางคอลัมน์
+    - error: find ว่าง → "ต้องระบุข้อความที่จะค้นหา" · regex เสีย → "Regex ไม่ถูกต้อง: ..." (คืนของเดิมไม่แตะ)
+  · UI `src\app\replace\page.tsx` (client): reuse parse/detect/columns/FileDropzone → อัปโหลด → ช่อง find→replacement + เลือกโหมด (มีคำนี้/ตรงทั้งช่อง/regex) +
+    toggle ไม่สนพิมพ์เล็กใหญ่/ตัดช่องว่าง(exact)/จำกัดคอลัมน์ → chips (แก้กี่ช่อง/กี่แถว/จากกี่แถว) + ตัวอย่างก่อน→หลัง + ตารางไฮไลต์ช่องที่เปลี่ยน (indigo) + ดาวน์โหลด CSV/Excel
+  · verify 2 ชั้น: (1) **Node test 38/38 ผ่าน**: contains (เดี่ยว/หลายครั้ง/ci), exact (+trimCompare, แทนเป็นว่าง), regex (capture $2/$1, ci, เสีย→error คืนเดิม),
+    cols จำกัด, `$` ใน contains เป็นตัวอักษรจริง, ช่องว่าง/null ไม่แตะ, ตัวเลข→string, find ว่าง→error, samples cap 50, **invariant input ไม่ mutate + แถวคงเดิม**
+    (2) **Chrome UI จริง** (CSV `tracking,container,note`): contains TU-A→TU-01 = แก้ 3 ช่อง/2 แถว (container 2 + note "TU-A test"→"TU-01 test") ·
+    exact = แก้ 2 ช่อง (เฉพาะ "TU-A" เป๊ะ, "TU-A test" ไม่โดน) · regex `([A-Z]+)-([A-Z0-9]+)`→`$2/$1` = TU-A→A/TU สลับกลุ่มถูก · regex เสีย `([A-Z` → error chip + ปุ่มดาวน์โหลด disabled + ข้อมูลคืนเดิม ·
+    Excel `packing-แทนที่.xlsx` PK magic 16KB · **console สะอาด**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
@@ -506,4 +519,4 @@ flow:
     - ต้องไฟล์จริงของภูม → **invoice-vs-packing 🧾** (คือ reconcile เฉพาะทาง — รอ format จริงก่อนค่อยทำ ไม่งั้นเดา schema ผิด)
     - ต้อง spec/network → container-load (3D packing), fx-rate (เรตสด)
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️, เติมค่าลงล่าง ⬇️, ดึงข้อมูลข้ามไฟล์ (VLOOKUP) 🔗, แยกคอลัมน์ ✂️➡️, รวมคอลัมน์ 🔗➡️)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️, เติมค่าลงล่าง ⬇️, ดึงข้อมูลข้ามไฟล์ (VLOOKUP) 🔗, แยกคอลัมน์ ✂️➡️, รวมคอลัมน์ 🔗➡️, ค้นหา-แทนที่ 🔁)
