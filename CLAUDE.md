@@ -377,6 +377,19 @@ flow:
   · verify 2 ชั้น: (1) **Node test 26/26 ผ่าน**: parseList (trim/CRLF/dedupe), mulberry32 (seed เดิม→เลขเดิม), shuffle (permutation ไม่แก้ต้นฉบับ),
     pickN (ไม่ซ้ำ/n≥len→ทั้งหมด/n≤0→[]), splitGroups (ผลรวมครบ/เกลี่ยเท่า/k≤0→1กลุ่ม/k>items) · (2) **Chrome UI**: 7 รายชื่อ, seed 42 สุ่ม 3 คน = [D,B,A]
     กดซ้ำได้ผลเดิม (reproducible), แบ่ง 3 กลุ่ม = [3,2,2] รวม 7 ครบไม่ทิ้ง เกลี่ยเท่า · console สะอาด
+- 2026-07-10 — **เครื่องมือที่ 20 พร้อมใช้: สรุปยอด & สถิติคอลัมน์ 📊** (`/stats`) — tool ใหม่ (ไม่มีใน registry เดิม) ตอบคำถามรายวัน "ไฟล์นี้รวมน้ำหนัก/CBM/กล่องเท่าไหร่"
+  · engine `src\lib\stats\stats.ts` (pure): `computeStats(header, dataRows, cols?)` → ต่อคอลัมน์คืน `ColumnStat`:
+    count/filled/blank/numeric/nonNumeric/zero/distinct/sum/avg/min/max + `isNumericCol` (numeric ≥ filled/2 และ filled>0)
+    - `parseNumeric` (ตัด comma+trim, boolean/Infinity→null สอดคล้อง toNumber ของ diff) · ตัดแถวว่างทั้งแถวก่อนนับ (ยอดไม่เพี้ยน) ·
+      width ขยายตามแถวที่กว้างกว่า header · distinct เทียบแบบ string ที่ trim แล้ว · `fmtNum` (คอมมา, ปัด 1e6 กัน float error, ไม่โชว์ .00) · `statsToCsv`
+    - **ปรัชญา:** แค่ "อ่านสรุป" ไม่แก้ข้อมูล (อ่านอย่างเดียว)
+  · UI `src\app\stats\page.tsx` (client): reuse parse/detect/FileDropzone → อัปโหลด → เลือก header → การ์ดยอดรวมคอลัมน์ตัวเลข (เด่น) +
+    ตารางสถิติทุกคอลัมน์ (badge ตัวเลข/ว่าง) + toggle "เฉพาะคอลัมน์ตัวเลข" + ดาวน์โหลดสรุป CSV
+  · verify 2 ชั้น: (1) **Node test 55/55 ผ่าน**: parseNumeric (comma/trim/blank/text/bool/Infinity/negative), computeStats
+    (filled/blank/numeric/nonNumeric/sum/avg/min/max, cbm zero, distinct+dup, ตัดแถวว่าง, cols filter, ragged row, width ขยาย, no-numeric→avg null),
+    fmtNum (integer คอมมา/decimal/null/float error/Infinity), statsToCsv (sum ว่างเมื่อไม่ใช่ตัวเลข), distinct trim
+    (2) **Chrome UI จริง** (CSV 5 แถว): chip "5 แถว · 3 คอลัมน์", การ์ด weight sum 357.5/avg 119.17/min 5.5/max 340,
+    cbm sum 2.84/zero 1, tracking distinct 4/ไม่มี badge ตัวเลข · download `packing-สรุป.csv` (blob) · toggle → เหลือ 2 คอลัมน์ตัวเลข · **console สะอาด**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
@@ -386,4 +399,4 @@ flow:
     - ต้องไฟล์จริงของภูม → **invoice-vs-packing 🧾** (คือ reconcile เฉพาะทาง — รอ format จริงก่อนค่อยทำ ไม่งั้นเดา schema ผิด)
     - ต้อง spec/network → container-load (3D packing), fx-rate (เรตสด)
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊)
