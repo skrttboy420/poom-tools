@@ -416,6 +416,17 @@ flow:
     trim จับคู่+แสดงค่า trim, trim off, caseInsensitive, นับ dup+dedup, identical, empty, compareText, invariant, compareToCsv+escape
     (2) **Chrome UI จริง**: A(5, KY001 ซ้ำ) B(3, " KY002 " มีช่องว่าง) → เฉพาะ A [KY001,KY004], ทั้งคู่ [KY002,KY003] (trim จับได้), เฉพาะ B [KY005],
     "ซ้ำ 1", **chip 3 สีต่างกันจริง** (คอนเฟิร์ม dynamic-class fix), download `list-compare.csv` blob · **console สะอาด**
+- 2026-07-10 — **เครื่องมือที่ 23 พร้อมใช้: เลือก/จัดเรียงคอลัมน์ 🧲** (`/columns`) — ตรง use-case หลัก "จัดตารางก่อน export เข้า Pacred"
+  · engine `src\lib\pluck\pluck.ts` (pure): `pluckColumns(header, dataRows, specs, {dropEmptyRows})` → reshape ตารางตาม `ColumnSpec[]` (เรียงตาม specs เป๊ะ):
+    - `{src, name, constant?}` · src ≥ 0 = ดึงคอลัมน์ต้นทาง · **src < 0 = คอลัมน์ค่าคงที่** (ใส่ `constant` ทุกแถว เช่น ติดเลขตู้) · src เกินขอบ → null
+    - **แค่จัดรูปคอลัมน์ ไม่แตะค่าจริงในเซลล์** (ยึดค่าตามต้นฉบับ) · เลือกซ้ำคอลัมน์เดิม 2 ครั้งได้ · `defaultSpecs` = ทุกคอลัมน์ตามลำดับเดิม (ชื่อว่าง→"คอลัมน์ N")
+    - `dropEmptyRows` **นับเฉพาะคอลัมน์ต้นฉบับ** (src≥0) → **คอลัมน์ค่าคงที่ไม่ช่วยให้แถวว่างรอด** (กันแถว subtotal/ว่างติดมา) · ไม่มี src เลย → ไม่ตัด
+  · UI `src\app\columns\page.tsx` (client): reuse parse/detect/columns/FileDropzone → อัปโหลด → เลือก header → auto-load ทุกคอลัมน์ →
+    จัด spec: เลือก src (หรือ ➕ ค่าคงที่) / เปลี่ยนชื่อหัว / ▲▼ สลับลำดับ / ลบ / เพิ่มคอลัมน์ + toggle ตัดแถวว่าง → ตารางผลสด (sticky header) + ดาวน์โหลด CSV/Excel
+  · verify 2 ชั้น: (1) **Node test 27/27 ผ่าน**: subset+reorder, rename (ไทย), constant (src<0 + default ว่าง), src เกินขอบ→null,
+    dropEmptyRows นับ src อย่างเดียว (ค่าคงที่ไม่ rescue), empty specs, defaultSpecs identity round-trip, ดึงคอลัมน์ซ้ำ · (2) **Chrome UI จริง** (CSV 4 คอลัมน์ + แถวว่าง):
+    default = 4 คอลัมน์ identity · เพิ่มค่าคงที่ container=TU-A + ตัดแถวว่าง → ตัดว่าง 2 เหลือ 3 แถว, TU-A ครบทุกแถว (ค่าคงที่ไม่ช่วยแถวว่างรอด) ·
+    ▲ ขยับ container เหนือ note (ค่าเลื่อนตามถูก) · Excel `packing-คอลัมน์.xlsx` 16KB magic PK\x03\x04 · search หน้าแรกเจอการ์ด · **console สะอาด**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
@@ -425,4 +436,4 @@ flow:
     - ต้องไฟล์จริงของภูม → **invoice-vs-packing 🧾** (คือ reconcile เฉพาะทาง — รอ format จริงก่อนค่อยทำ ไม่งั้นเดา schema ผิด)
     - ต้อง spec/network → container-load (3D packing), fx-rate (เรตสด)
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲)
