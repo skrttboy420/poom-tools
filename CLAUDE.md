@@ -522,6 +522,17 @@ flow:
     ช่องว่าง→"", trimValues on/off, joiner กำหนดเอง, skipEmptyRows on/off (rowsUsed/skipped ถูก), template ว่าง→error, literal ล้วน, token ว่าง, multi-line, ตัวเลข/บูลีน→string, header ซ้ำ→ตัวแรก, **invariant input ไม่ mutate**
     (2) **Chrome UI จริง** (CSV `tracking,kg,container`): auto-template `{tracking} · {kg} · {container}` → `KY001 · 12 · TU-A` 2 บรรทัด (ข้ามแถวว่างท้าย 1) ·
     SQL `INSERT INTO pkg VALUES ('{tracking}', {kg}, '{weight}')` → resolve tracking/kg ถูก, `{weight}` ไม่รู้จัก **คงไว้ + amber warning** · ดาวน์โหลด `packing-ข้อความ.txt` ตรงกับ output · **console สะอาด**
+- 2026-07-10 — **เครื่องมือที่ 32 พร้อมใช้: แตกแถว ↕️➡️** (`/explode`) — หมวด excel · **คู่กับ /split-col** (แตกเป็น "คอลัมน์" ↔ แตกเป็น "แถว")
+  · use-case จริง: บางแถวใส่หลาย tracking ในช่องเดียว ("KY001, KY002, KY003") → แตกเป็น **1 tracking ต่อ 1 แถว** (คอลัมน์อื่นคัดลอกซ้ำ) เพื่อ normalize ก่อนเอาไป /reconcile /dedup /group
+  · engine `src\lib\explode\explode.ts` (pure): `explodeRows(header, dataRows, col, {delimiter, trim, skipEmpty})` → split ช่องเป้าหมายด้วยตัวคั่น (literal) แล้ว **ทำซ้ำแถว 1 ชิ้น/แถว**
+    - **ปรัชญาไม่ทำแถวหาย:** ทุกแถวออกอย่างน้อย 1 แถว — ช่องว่าง/null → คงแถวเดิม 1 แถว (ไม่แตะค่า) · ช่องที่เป็นตัวคั่นล้วน → คงค่าเดิม 1 แถว · **invariant: outputRows ≥ inputRows เสมอ** (+ input ไม่ mutate)
+    - `trim` (default on) trim แต่ละชิ้น · `skipEmpty` (default on) ทิ้งชิ้นว่างจากตัวคั่นซ้อน (A,,B → A,B) · error: คอลัมน์นอกช่วง → "เลือกคอลัมน์ที่จะแตกแถว" · delimiter ว่าง → "ใส่ตัวคั่น..."
+  · UI `src\app\explode\page.tsx` (client): reuse parse/detect/columns/FileDropzone → อัปโหลด → **auto-guess คอลัมน์+ตัวคั่น** (สแกนหาคอลัมน์ที่มีหลายค่าปนมากสุด) → เลือกคอลัมน์ (chips) + ตัวคั่น (+ปุ่มลัด , / | ; เว้นวรรค ขึ้นบรรทัด) + toggle trim/skipEmpty →
+    chips (เข้า→ออก, แตกกี่แถว, +แถวใหม่) + ตารางผล (คอลัมน์เป้าหมายไฮไลต์ indigo +↕️) + ดาวน์โหลด CSV/Excel
+  · verify 2 ชั้น: (1) **Node test 33/33 ผ่าน**: แตกพื้นฐาน (คอลัมน์อื่นคัดลอกซ้ำ), trim on/off, skipEmpty on/off (ตัวคั่นซ้อน), ช่องว่าง/null คงแถว, ตัวคั่นล้วน→1 แถว,
+    ไม่มีตัวคั่น→1 แถว, แตกคอลัมน์กลาง, ตัวเลข→string, error (นอกช่วง/delimiter ว่าง คืนของเดิม), **invariant outputRows≥inputRows + input ไม่ mutate**, ragged row
+    (2) **Chrome UI จริง** (CSV `tracking,box,container`, tracking = `"KY001, KY002, KY003"`): auto-guess = tracking + "," → 3→5 แถว, แตก 1 แถว
+    (KY001/KY002/KY003 แต่ละแถว box=3 container=TU-A คัดลอกซ้ำถูก) · แถวว่างท้ายคงไว้ (ไม่หาย) · Excel `packing-แตกแถว.xlsx` PK magic 16KB · **console สะอาด**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
@@ -531,4 +542,4 @@ flow:
     - ต้องไฟล์จริงของภูม → **invoice-vs-packing 🧾** (คือ reconcile เฉพาะทาง — รอ format จริงก่อนค่อยทำ ไม่งั้นเดา schema ผิด)
     - ต้อง spec/network → container-load (3D packing), fx-rate (เรตสด)
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️, เติมค่าลงล่าง ⬇️, ดึงข้อมูลข้ามไฟล์ (VLOOKUP) 🔗, แยกคอลัมน์ ✂️➡️, รวมคอลัมน์ 🔗➡️, ค้นหา-แทนที่ 🔁, สร้างข้อความจากตาราง 📝)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️, เติมค่าลงล่าง ⬇️, ดึงข้อมูลข้ามไฟล์ (VLOOKUP) 🔗, แยกคอลัมน์ ✂️➡️, รวมคอลัมน์ 🔗➡️, ค้นหา-แทนที่ 🔁, สร้างข้อความจากตาราง 📝, แตกแถว ↕️➡️)
