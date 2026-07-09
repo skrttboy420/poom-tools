@@ -474,6 +474,18 @@ flow:
   · verify 2 ชั้น: (1) **Node test 35/35 ผ่าน**: match ci/trim, first vs last wins (key B ซ้ำ), unmatched→null, blank key A, หลาย spec, duplicateKeysB นับถูก, invariant outputRows/order, input ไม่ mutate, spec นอกช่วงถูกกรอง
     (2) **Chrome UI จริง** (A `tracking,box` KY001-KY004 · B `tracking,kg,container` มี ky001/KY001 ซ้ำ): auto เลือก B cols kg+container · เจอ 3/ไม่เจอ 1 (KY003 ไม่มีใน B)/key B ซ้ำ 1 ·
     **first-wins** → KY001=10/TU-A · **last-wins** → KY001 พลิกเป็น 99/TU-DUP · KY003 เติมว่าง (ทุกแถว A ครบ ไม่หาย) · Excel `packing-ดึงข้อมูล.xlsx` PK magic 16KB · **console สะอาด**
+- 2026-07-10 — **เครื่องมือที่ 28 พร้อมใช้: แยกคอลัมน์ ✂️➡️** (`/split-col`) — หมวด excel · แยกช่องเดียวที่มีค่าปนกันออกเป็นหลายคอลัมน์ตามตัวคั่น
+  · use-case จริง: ช่องเดียวปนกัน เช่น "TU-A/123" (ตู้/เลข), "KY001-1" (tracking-กล่อง), "2024-01-15 นครปฐม" → แยกเป็นคอลัมน์แยกเพื่อ /group /sort /reconcile ต่อ
+  · **ต่างจาก /split** (แยก "ไฟล์" เป็นหลายชีตตามค่าคอลัมน์) — อันนี้แยก "คอลัมน์" เป็นหลายคอลัมน์ในไฟล์เดิม
+  · engine `src\lib\splitcol\splitcol.ts` (pure): `splitColumn(header, dataRows, col, {delimiter, maxParts, keepOriginal, trim, names})` → แตกช่องตาม **ตัวคั่น literal** (ไม่ใช่ regex → คาดเดาผลได้ 100%)
+    - **ปรัชญาไม่ทำข้อมูล/แถวหาย:** จำนวนแถวเท่าเดิมเสมอ · จำนวนคอลัมน์ = จำนวนชิ้นมากสุด (auto) แถวสั้นเติม "" · **maxParts cap → ชิ้นเกินต่อกลับด้วยตัวคั่นเดิมใส่คอลัมน์สุดท้าย (ไม่ตัดทิ้ง)**
+    - `keepOriginal` เก็บคอลัมน์เดิมไว้ด้วย · `trim` (default on) · error (คอลัมน์นอกช่วง/ตัวคั่นว่าง) → คืนของเดิมไม่แตะ · stats: parts/maxPartsFound/splitRows
+  · UI `src\app\split-col\page.tsx` (client): reuse parse/detect/columns/FileDropzone → อัปโหลด → **auto-guess คอลัมน์+ตัวคั่น** (สแกนหาช่องที่มีตัวคั่นบ่อยสุด) →
+    เลือกคอลัมน์/ตัวคั่น (+ปุ่มลัด / - , | ( - ) เว้นวรรค Tab) + toggle trim/keepOriginal + จำกัดจำนวนคอลัมน์ → ตารางผล (คอลัมน์ใหม่ไฮไลต์ฟ้า +✂️) + ดาวน์โหลด CSV/Excel
+  · verify 2 ชั้น: (1) **Node test 43/43 ผ่าน**: แยกพื้นฐาน, keepOriginal, ชื่อ custom, ragged (เติม ""/แถวไม่หาย), maxParts cap ต่อกลับ, pad, trim on/off,
+    solo/null→1 ชิ้น, ตัวคั่นหลายตัวอักษร, error (คอลัมน์/ตัวคั่น), **invariant ต่อชิ้นกลับ=ค่าเดิม (200 แถว) + input ไม่ mutate**
+    (2) **Chrome UI จริง** (CSV `tracking,combo,note` combo="TU-A/123"..): auto-guess = combo + "/" · แยก 3 คอลัมน์ (KY003 "TU-C/789/extra"→789+extra ไม่หาย, KY004 solo→1 ชิ้น) ·
+    maxParts 2 → KY003=TU-C, "789/extra" (ต่อกลับ) · keepOriginal → คอลัมน์ combo เดิมยังอยู่ + คอลัมน์ใหม่ต่อท้าย · Excel `packing-แยกคอลัมน์.xlsx` PK magic 17KB · **console สะอาด**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
@@ -483,4 +495,4 @@ flow:
     - ต้องไฟล์จริงของภูม → **invoice-vs-packing 🧾** (คือ reconcile เฉพาะทาง — รอ format จริงก่อนค่อยทำ ไม่งั้นเดา schema ผิด)
     - ต้อง spec/network → container-load (3D packing), fx-rate (เรตสด)
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️, เติมค่าลงล่าง ⬇️, ดึงข้อมูลข้ามไฟล์ (VLOOKUP) 🔗)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️, เติมค่าลงล่าง ⬇️, ดึงข้อมูลข้ามไฟล์ (VLOOKUP) 🔗, แยกคอลัมน์ ✂️➡️)
