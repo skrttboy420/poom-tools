@@ -390,6 +390,20 @@ flow:
     fmtNum (integer คอมมา/decimal/null/float error/Infinity), statsToCsv (sum ว่างเมื่อไม่ใช่ตัวเลข), distinct trim
     (2) **Chrome UI จริง** (CSV 5 แถว): chip "5 แถว · 3 คอลัมน์", การ์ด weight sum 357.5/avg 119.17/min 5.5/max 340,
     cbm sum 2.84/zero 1, tracking distinct 4/ไม่มี badge ตัวเลข · download `packing-สรุป.csv` (blob) · toggle → เหลือ 2 คอลัมน์ตัวเลข · **console สะอาด**
+- 2026-07-10 — **เครื่องมือที่ 21 พร้อมใช้: แปลง JSON ↔ ตาราง/CSV 🔧** (`/json-csv`) — dev+cargo · เปลี่ยน response JSON (MOMO API/Supabase) เป็นตารางดูง่าย/เอาไปเทียบต่อ
+  · engine `src\lib\jsoncsv\jsoncsv.ts` (pure): 2 ทิศ
+    - `jsonToTable(input, {flatten})` → normalize: array-of-objects (union key คงลำดับพบครั้งแรก, key ขาด→null) · single object (ห่อ 1 แถว) ·
+      array-of-arrays (คอลัมน์ 1..N, แถวสั้นเติม null) · primitive/ปน (คอลัมน์เดียว "value") · **nested object → JSON string ในช่อง (ไม่ทิ้งข้อมูล)** ·
+      `flatten` = แผ่ object ซ้อนเป็น dot notation (`meta.box`) แต่ **array ยังเป็น JSON string** (ไม่แผ่)
+    - `tableToJson(csv, {inferTypes, pretty})` → papaparse (`skipEmptyLines:"greedy"`, รองรับ quote+comma) → array of objects · header ว่าง→`col{i}` ·
+      `inferTypes`: ""→null, true/false→bool, null→null, ตัวเลข→number **แต่คงเลข 0 นำหน้า (`007` tracking/รหัส) เป็น string** (regex กัน `^-?0\d` ตามปรัชญา no-data-loss)
+  · UI `src\app\json-csv\page.tsx` (client, ไม่ต้องอัปไฟล์): 2-panel (วาง↔ผล) live + toggle ทิศ + options (flatten / เดาชนิด / จัดรูปสวย) +
+    ปุ่ม "↔ สลับทิศ" (เอาผลไปเป็น input ทิศตรงข้าม เช็ค round-trip) + ตัวอย่าง/ล้าง/คัดลอก/ดาวน์โหลด + พรีวิวตาราง (JSON→ตาราง)
+  · verify 2 ชั้น: (1) **Node test 46/46 ผ่าน**: array-of-objects (union/ลำดับ/null), single obj, flatten (ตื้น/ลึก, array คง string), array-of-arrays,
+    primitive→value, null/false คงค่า, empty array ok, error (bad/primitive/ว่าง) · tableToJson (infer number/bool/null, no-infer=string, "007"คง string,
+    0/0.5/-0.25 ยังเป็น number, empty→null/"", header ว่าง→col, quoted comma, pretty), round-trip · (2) **Chrome UI จริง**:
+    JSON nested → CSV union header `tracking,kg,meta,note` (meta=`{"box":2}` ไม่หาย, "a,b" quote ถูก), flatten → `meta.box`, พรีวิว 2 แถว ·
+    CSV→JSON: `007` คง string, 12.5→number, true→bool, pretty · bad JSON → error box+output ว่าง · download `data.csv` blob · **console สะอาด**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
@@ -399,4 +413,4 @@ flow:
     - ต้องไฟล์จริงของภูม → **invoice-vs-packing 🧾** (คือ reconcile เฉพาะทาง — รอ format จริงก่อนค่อยทำ ไม่งั้นเดา schema ผิด)
     - ต้อง spec/network → container-load (3D packing), fx-rate (เรตสด)
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧)
