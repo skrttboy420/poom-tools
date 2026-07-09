@@ -440,6 +440,18 @@ flow:
     sum ไม่มีตัวเลข=0/avg=null, คีย์หลายชั้น, trim จับกลุ่ม (+ปิด trim แยก 2), ตัดแถวว่าง, ignoreEmptyKey, invariant count รวม=countedRows, CSV+แถวรวม
     (2) **Chrome UI จริง** (CSV container/kg/cbm 5 แถว + คีย์ว่าง 1): auto-guess = container + sum kg/cbm · เปิดข้ามคีย์ว่าง → 2 กลุ่ม (TU-A 17.5/0.34, TU-B 350/2.5, รวม 367.5/2.84 ข้าม 1) ·
     ปิด → 3 กลุ่ม ((ว่าง) 1 แถว kg 3, รวม 5/370.5/2.94) · เปลี่ยนเป็น เฉลี่ย+นับไม่ซ้ำ → TU-A avg 8.75/distinct 2, total avg 74.1/distinct 5 · CSV `packing-สรุปกลุ่ม.csv` หัว+แถวรวมถูก · **console สะอาด**
+- 2026-07-10 — **เครื่องมือที่ 25 พร้อมใช้: เรียงลำดับตาราง ↕️** (`/sort`) — จัดเรียง packing list ก่อน export (เช่น เรียงตามตู้ แล้วน้ำหนักมาก→น้อย)
+  · engine `src\lib\sorttable\sort.ts` (pure): `sortRows(header, dataRows, keys, {blanksLast, caseInsensitive})` → เรียงหลายคีย์ (multi-key)
+    - **ปรัชญา = แค่สลับลำดับแถว ไม่ทำแถวหาย/ไม่แก้ค่า** → ผลลัพธ์เป็น **permutation ของ input เสมอ** (มี invariant test 200 แถว + เช็ค input ไม่ถูก mutate)
+    - **sort เสถียร (stable):** decorate-sort-undecorate ผูก index เดิม tie-break → แถวที่เท่ากันคงลำดับเดิมแน่นอน
+    - `SortKey {col, dir: asc|desc, type?: auto|number|text}` · auto = เดา (ตัวเลขทั้งคู่→เทียบเลขจริง "10">"2", ไม่งั้นเทียบข้อความ localeCompare "th") · number = บังคับเลข (ช่องเลขมาก่อนช่องไม่ใช่เลข) · text = บังคับข้อความ
+    - `blanksLast` (default on) = ช่องว่างไปท้ายเสมอ **ไม่ขึ้นกับทิศ** (asc/desc ก็อยู่ท้าย) · `caseInsensitive` (default on) · `parseNumeric` inline (ตัด comma+trim) ตามกฎ self-contained
+  · UI `src\app\sort\page.tsx` (client): reuse parse/detect/columns/FileDropzone → อัปโหลด → เลือก header → แถวคีย์เรียง
+    (เลือกคอลัมน์ + ปุ่ม น้อย→มาก↑/มาก→น้อย↓ + ชนิด auto/ตัวเลข/ข้อความ · เพิ่ม/ลบคีย์ได้) + toggle ช่องว่างท้าย/ไม่สนพิมพ์เล็กใหญ่ → ตารางผล (sticky header, พรีวิว 300 แถว) + ดาวน์โหลด CSV/Excel
+  · verify 2 ชั้น: (1) **Node test 19/19 ผ่าน**: เลขน้อย→มาก/มาก→น้อย, stable tie, เรียงข้อความ, multi-key, auto เดาเลข vs บังคับ text,
+    blanksLast (asc/desc/ปิด), number บังคับเลขมาก่อน, case-insensitive, ไม่มีคีย์→คงเดิม, **invariant permutation 200 แถว**, stability, input ไม่ถูกแก้
+    (2) **Chrome UI จริง** (CSV tracking/kg/container 4 แถว): default เรียง tracking = KY001-004 · เปลี่ยนเป็น kg (ตัวเลข) → 2,10,10,100 tie เสถียร ·
+    multi-key container↑ + kg↓ → KY003(100,TU-A),KY001(2,TU-A),KY002(10,TU-B),KY004(10,TU-B) ถูก · Excel `packing-เรียง.xlsx` PK magic 16KB · **console สะอาด**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
@@ -449,4 +461,4 @@ flow:
     - ต้องไฟล์จริงของภูม → **invoice-vs-packing 🧾** (คือ reconcile เฉพาะทาง — รอ format จริงก่อนค่อยทำ ไม่งั้นเดา schema ผิด)
     - ต้อง spec/network → container-load (3D packing), fx-rate (เรตสด)
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️)
