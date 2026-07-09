@@ -463,6 +463,17 @@ flow:
   · verify 2 ชั้น: (1) **Node test 36/36 ผ่าน**: fill down/up, ไม่ทับค่าเดิม, ว่างบนสุด→stillBlank, หลายคอลัมน์, trimBlank on/off, resetOnBlankRow, **แถวว่างไม่ถูกเติม (กันแถวผี) แต่ carry ต่อ**, invariant 100 แถว+input ไม่ mutate, คอลัมน์นอกช่วง, แถวสั้นขยาย, `[]`=แถวว่างข้าม
     (2) **Chrome UI จริง** (CSV container/tracking/kg 5 แถว + trailing row): auto-guess=container · down → เติม 3 (KY002/KY003→TU-A, KY005→TU-B) **แถวว่างท้ายคงว่าง ไม่เกิดแถวผี** ไฮไลต์เขียว 3 ช่อง ·
     up → เติม 2 (KY002/KY003←TU-B), KY005 ยังว่าง 1 · Excel `packing-เติม.xlsx` PK magic 16KB · **console สะอาด**
+- 2026-07-10 — **เครื่องมือที่ 27 พร้อมใช้: ดึงข้อมูลข้ามไฟล์ (VLOOKUP) 🔗** (`/lookup`) — หมวด excel · เอาไฟล์หลัก A (เช่น packing list) มาดึงคอลัมน์จากไฟล์อ้างอิง B (เช่น export ที่มีน้ำหนัก/เลขตู้) match ตาม key (tracking) → เติมคอลัมน์เข้า A
+  · **ต่างจากเครื่องมือเทียบเดิม:** reconcile = "เทียบ" A↔B แล้วไฮไลต์ตรง/ไม่ตรง/หาย · merge = ต่อแถว A+B (แนวตั้ง) · **lookup = ต่อคอลัมน์ตาม key (แนวนอน) = enrich**
+  · engine `src\lib\lookup\lookup.ts` (pure): `lookupJoin(aHeader, aRows, aKeyCol, bHeader, bRows, bKeyCol, specs, opts)` → สร้าง index ของ B (key→row) แล้วเดินทุกแถว A เติมค่าที่ดึงมา
+    - **ปรัชญา = ทุกแถวของ A อยู่ครบเสมอ (ไม่หาย/ไม่สลับลำดับ)** — แค่เติมคอลัมน์จาก B · แถวที่ไม่เจอ match → เติมค่าว่าง (invariant: outputRows === dataA.length, matched+unmatched === dataA.length, input ไม่ mutate)
+    - `LookupSpec {bCol, name?}` เลือกได้หลายคอลัมน์ · `caseInsensitive`/`trim` (default on, normalize key ก่อนจับคู่) · `onMultiple: first|last` (ถ้า key ใน B ซ้ำ ใช้แถวไหน) · ตัดแถวว่างทั้งแถว 2 ฝั่ง · key ว่าง match ไม่ได้
+    - stats: matched/unmatched/matchedKeys/`duplicateKeysB` (บอก key B ที่ซ้ำ = ambiguous)/blankKeyRowsA/addedCols/inputRows
+  · UI `src\app\lookup\page.tsx` (client): 2 dropzone (A=ไฟล์หลัก sky · B=ไฟล์อ้างอิง violet) เลือกชีต/แถวหัว/คอลัมน์ key ต่อฝั่ง (auto-guess tracking) → เลือกคอลัมน์ B ที่จะดึง (chips) + toggle ci/trim + onMultiple →
+    chips (เจอ/ไม่เจอ/key B ซ้ำ) + ตารางผล (คอลัมน์ที่ดึงมาไฮไลต์ violet + หัวติด "(B)") + ดาวน์โหลด CSV/Excel
+  · verify 2 ชั้น: (1) **Node test 35/35 ผ่าน**: match ci/trim, first vs last wins (key B ซ้ำ), unmatched→null, blank key A, หลาย spec, duplicateKeysB นับถูก, invariant outputRows/order, input ไม่ mutate, spec นอกช่วงถูกกรอง
+    (2) **Chrome UI จริง** (A `tracking,box` KY001-KY004 · B `tracking,kg,container` มี ky001/KY001 ซ้ำ): auto เลือก B cols kg+container · เจอ 3/ไม่เจอ 1 (KY003 ไม่มีใน B)/key B ซ้ำ 1 ·
+    **first-wins** → KY001=10/TU-A · **last-wins** → KY001 พลิกเป็น 99/TU-DUP · KY003 เติมว่าง (ทุกแถว A ครบ ไม่หาย) · Excel `packing-ดึงข้อมูล.xlsx` PK magic 16KB · **console สะอาด**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
@@ -472,4 +483,4 @@ flow:
     - ต้องไฟล์จริงของภูม → **invoice-vs-packing 🧾** (คือ reconcile เฉพาะทาง — รอ format จริงก่อนค่อยทำ ไม่งั้นเดา schema ผิด)
     - ต้อง spec/network → container-load (3D packing), fx-rate (เรตสด)
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️, เติมค่าลงล่าง ⬇️)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️, เติมค่าลงล่าง ⬇️, ดึงข้อมูลข้ามไฟล์ (VLOOKUP) 🔗)
