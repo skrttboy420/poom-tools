@@ -533,6 +533,20 @@ flow:
     ไม่มีตัวคั่น→1 แถว, แตกคอลัมน์กลาง, ตัวเลข→string, error (นอกช่วง/delimiter ว่าง คืนของเดิม), **invariant outputRows≥inputRows + input ไม่ mutate**, ragged row
     (2) **Chrome UI จริง** (CSV `tracking,box,container`, tracking = `"KY001, KY002, KY003"`): auto-guess = tracking + "," → 3→5 แถว, แตก 1 แถว
     (KY001/KY002/KY003 แต่ละแถว box=3 container=TU-A คัดลอกซ้ำถูก) · แถวว่างท้ายคงไว้ (ไม่หาย) · Excel `packing-แตกแถว.xlsx` PK magic 16KB · **console สะอาด**
+- 2026-07-10 — **เครื่องมือที่ 33 พร้อมใช้: แปลงรูปแบบวันที่ 📅** (`/date`) — หมวด excel · normalize คอลัมน์วันที่ก่อนเรียง/เทียบ/เข้า Pacred
+  · use-case จริง: packing list/export มีวันที่คนละรูปแบบปนกัน (10/07/2025, 2025-7-1, "68" ปี พ.ศ. 2 หลัก, YYYYMMDD, Excel serial) → อยากได้รูปแบบเดียวทั้งคอลัมน์
+  · engine `src\lib\datefmt\datefmt.ts` (pure): `normalizeDates(header, dataRows, col, opts)` + `normalizeOneDate(cell, opts)` (export ไว้เทส/พรีวิว)
+    - **ปรัชญา = ห้ามหาย + ห้ามเดามั่ว:** ช่อง parse ไม่ได้ → **คงค่าเดิม** (ไม่ทิ้ง ไม่แทนมั่ว) + นับ `unparsed` + เก็บ `unparsedSamples` (unique cap 50) โชว์เตือน · ช่องว่าง → คงว่าง · **rows.length คงเดิมเสมอ + input ไม่ mutate**
+    - **กำกวม DD/MM vs MM/DD = ผู้ใช้เลือกเอง** (`dayFirst` default on) ไม่เดาให้ · ปีมาก่อน (4 หลักหน้า) = ชัดเจน ไม่สน dayFirst
+    - parse: ISO ปีก่อน · DD/MM/YYYY (คั่นด้วย / - .) · YYYYMMDD 8 หลัก · Excel serial (typeof number, ช่วง 20000–60000 กันตัวเลขทั่วไปโดนตีความมั่ว, ค.ศ. อยู่แล้วไม่ปรับ พ.ศ.)
+    - ปี 2 หลัก: พ.ศ.→2500+yy · ค.ศ.→pivot 70 (yy<70→20xx, ≥70→19xx) · **`buddhistInput` ลบ 543** (2568→2025, "68"→2568→2025) · **`buddhistOutput` บวก 543**
+    - validate ช่วงเสมอ (เดือน 1-12, วันในเดือนจริง + leap year) → ผิด = ถือว่า parse ไม่ได้ (เช่น 31/02, 29/02 ปีปกติ) · 6 รูปแบบ output (ISO/DD-MM/MM-DD/DD-MM-/D MMM/YYYYMMDD)
+  · UI `src\app\date\page.tsx` (client): reuse parse/detect/columns/FileDropzone → อัปโหลด → **auto-guess คอลัมน์วันที่** (จับชื่อหัว date/วันที่/eta/etd ก่อน ไม่งั้นสแกนค่าที่เป็นรูปวันที่) →
+    เลือกคอลัมน์ (chips) + เลือกรูปแบบ output (chips มีตัวอย่าง) + toggle วันมาก่อน/พ.ศ.เข้า/พ.ศ.ออก → chips (แปลง/ตรงเดิม/อ่านไม่ออก/ว่าง) + แถบเตือนค่าที่อ่านไม่ออก + ตาราง (คอลัมน์เป้าหมายไฮไลต์ +📅) + ดาวน์โหลด CSV/Excel
+  · verify 2 ชั้น: (1) **Node test 48/48 ผ่าน**: ISO/DD-MM/MM-DD/YYYYMMDD/คั่นจุด-ขีด, ปี 2 หลัก pivot, พ.ศ. เข้า/ออก (2568↔2025, "68"→2025), 6 output ครบ,
+    validate (เดือน 13/วัน 32/31 ก.พ./29 ก.พ. ปีปกติ = null · 29 ก.พ. อธิกสุรทิน ผ่าน), Excel serial 45848→2025-07-10 (2025/99999 = null), เต็มตาราง (converted/unchanged/blank/unparsed คงค่าเดิม), col นอกช่วง=error, ไม่ mutate
+    (2) **Chrome UI จริง** (CSV 6 แถว วันที่ปนรูปแบบ): แปลง 3 (10/07/2025→2025-07-10, 2025-7-1→2025-07-01, 20250710→2025-07-10), ตรงเดิม 1, อ่านไม่ออก 1 ("hello" คงเดิม), ว่างคงว่าง ·
+    toggle พ.ศ.ออก → 2025→2568 · Excel `packing-วันที่.xlsx` PK magic 16KB · search "แปลงวันที่" หน้าแรก → การ์ด 📅 → /date · **console สะอาด**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
@@ -542,4 +556,4 @@ flow:
     - ต้องไฟล์จริงของภูม → **invoice-vs-packing 🧾** (คือ reconcile เฉพาะทาง — รอ format จริงก่อนค่อยทำ ไม่งั้นเดา schema ผิด)
     - ต้อง spec/network → container-load (3D packing), fx-rate (เรตสด)
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️, เติมค่าลงล่าง ⬇️, ดึงข้อมูลข้ามไฟล์ (VLOOKUP) 🔗, แยกคอลัมน์ ✂️➡️, รวมคอลัมน์ 🔗➡️, ค้นหา-แทนที่ 🔁, สร้างข้อความจากตาราง 📝, แตกแถว ↕️➡️)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️, เติมค่าลงล่าง ⬇️, ดึงข้อมูลข้ามไฟล์ (VLOOKUP) 🔗, แยกคอลัมน์ ✂️➡️, รวมคอลัมน์ 🔗➡️, ค้นหา-แทนที่ 🔁, สร้างข้อความจากตาราง 📝, แตกแถว ↕️➡️, แปลงรูปแบบวันที่ 📅)
