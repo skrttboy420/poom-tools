@@ -404,6 +404,18 @@ flow:
     0/0.5/-0.25 ยังเป็น number, empty→null/"", header ว่าง→col, quoted comma, pretty), round-trip · (2) **Chrome UI จริง**:
     JSON nested → CSV union header `tracking,kg,meta,note` (meta=`{"box":2}` ไม่หาย, "a,b" quote ถูก), flatten → `meta.box`, พรีวิว 2 แถว ·
     CSV→JSON: `007` คง string, 12.5→number, true→bool, pretty · bad JSON → error box+output ว่าง · download `data.csv` blob · **console สะอาด**
+- 2026-07-10 — **เครื่องมือที่ 22 พร้อมใช้: เทียบ 2 รายการ 🔁** (`/list-compare`) — หมวด "เทียบ" · reconcile เบา ๆ ไม่ต้องอัปไฟล์ (วางลิสต์ tracking 2 ก้อน)
+  · engine `src\lib\listcompare\listcompare.ts` (pure): `compareLists(aItems, bItems, {trim, caseInsensitive})` → set diff:
+    `onlyA` / `onlyB` / `both` (คงลำดับตามที่พบ, both แสดงค่าจากฝั่ง A) + `countA/countB` (ไม่ซ้ำ) + `dupA/dupB` (บรรทัดซ้ำเกินตัวแรก)
+    - `keyOf` normalize (trim default on + caseInsensitive) เพื่อ "จับคู่" แต่ **แสดงค่าจริงตามที่พิมพ์** (ไม่ทำข้อมูลเพี้ยน) · `parseLines` ตัดบรรทัดว่าง+ช่องว่างท้าย ·
+      `compareText` (จากข้อความดิบ) · `compareToCsv` (value,status: only-A/only-B/both) · **invariant: countA = onlyA + both**
+  · UI `src\app\list-compare\page.tsx` (client, ไม่ต้องอัปไฟล์): 2 textarea (A/B) + toggle (ตัดช่องว่าง default/ไม่สนพิมพ์เล็กใหญ่) +
+    chips สรุป 3 สี + 3 คอลัมน์ผล (เฉพาะ A=ฟ้า / มีทั้งคู่=เขียว / เฉพาะ B=เหลือง) คัดลอกรายคอลัมน์ + ปุ่มสลับ A/B + ดาวน์โหลด CSV
+    - **บทเรียน Tailwind v4:** JIT อ่าน class จาก literal เท่านั้น → **ห้ามประกอบ string สี** (`bg-${c}-100` = สีไม่ขึ้น) ใช้ class เต็มใน const แทน
+  · verify 2 ชั้น: (1) **Node test 44/44 ผ่าน**: parseLines (CRLF/บรรทัดว่าง/คงช่องว่างหน้า), onlyA/onlyB/both คงลำดับ,
+    trim จับคู่+แสดงค่า trim, trim off, caseInsensitive, นับ dup+dedup, identical, empty, compareText, invariant, compareToCsv+escape
+    (2) **Chrome UI จริง**: A(5, KY001 ซ้ำ) B(3, " KY002 " มีช่องว่าง) → เฉพาะ A [KY001,KY004], ทั้งคู่ [KY002,KY003] (trim จับได้), เฉพาะ B [KY005],
+    "ซ้ำ 1", **chip 3 สีต่างกันจริง** (คอนเฟิร์ม dynamic-class fix), download `list-compare.csv` blob · **console สะอาด**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
@@ -413,4 +425,4 @@ flow:
     - ต้องไฟล์จริงของภูม → **invoice-vs-packing 🧾** (คือ reconcile เฉพาะทาง — รอ format จริงก่อนค่อยทำ ไม่งั้นเดา schema ผิด)
     - ต้อง spec/network → container-load (3D packing), fx-rate (เรตสด)
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁)
