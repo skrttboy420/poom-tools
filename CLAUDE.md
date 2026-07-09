@@ -510,6 +510,18 @@ flow:
     (2) **Chrome UI จริง** (CSV `tracking,container,note`): contains TU-A→TU-01 = แก้ 3 ช่อง/2 แถว (container 2 + note "TU-A test"→"TU-01 test") ·
     exact = แก้ 2 ช่อง (เฉพาะ "TU-A" เป๊ะ, "TU-A test" ไม่โดน) · regex `([A-Z]+)-([A-Z0-9]+)`→`$2/$1` = TU-A→A/TU สลับกลุ่มถูก · regex เสีย `([A-Z` → error chip + ปุ่มดาวน์โหลด disabled + ข้อมูลคืนเดิม ·
     Excel `packing-แทนที่.xlsx` PK magic 16KB · **console สะอาด**
+- 2026-07-10 — **เครื่องมือที่ 31 พร้อมใช้: สร้างข้อความจากตาราง 📝** (`/template`) — หมวด excel · **ต่อยอด roadmap "Pacred paste-ready export"** (mail-merge ทั่วไป)
+  · use-case จริง: แต่ละแถว packing list → 1 บรรทัดข้อความ (บรรทัด paste เข้า Pacred, ข้อความแจ้งลูกค้ารายกล่อง, SQL VALUES, สรุปต่อ tracking)
+  · engine `src\lib\template\template.ts` (pure): `renderTemplate(header, dataRows, template, {joiner, skipEmptyRows, trimValues})` → แทน placeholder ต่อแถว
+    - placeholder 2 แบบ: **{ชื่อหัว}** (จับตามชื่อคอลัมน์ — trim + ไม่สนพิมพ์เล็กใหญ่) · **{#N}** (คอลัมน์ลำดับ N, 1-based — กันชื่อหัวว่าง/ซ้ำ) · escape `{{`→`{` `}}`→`}`
+    - **ปรัชญาไม่แทนมั่ว/ไม่ทิ้งเงียบ:** placeholder ที่หาไม่เจอ = **คงข้อความ `{x}` ไว้ให้เห็น + คืน `unknownTokens` เตือน** (ไม่แปลงเป็นว่าง) · ช่องว่าง/null → "" · **1 แถว → 1 บล็อก (แถวไม่หาย)**
+    - `skipEmptyRows` (default on) ข้ามแถวว่างทั้งแถว (ไม่สร้างบรรทัดเปล่า) · `joiner` คั่นระหว่างแถว (default `\n`) · `trimValues` · error: template ว่าง → "ใส่รูปแบบข้อความ (template) ก่อน"
+  · UI `src\app\template\page.tsx` (client): reuse parse/detect/FileDropzone → อัปโหลด (เดา template = ต่อทุกคอลัมน์ด้วย " · ") → **ปุ่มแทรกช่องที่ cursor** + textarea +
+    เลือกตัวคั่นแถว/ข้ามแถวว่าง/ตัดช่องว่าง → พาเนลผลลัพธ์สด (chips บรรทัด/ข้ามว่าง/จากกี่แถว) + เตือน unknown token (amber) + คัดลอก/ดาวน์โหลด .txt
+  · verify 2 ชั้น: (1) **Node test 38/38 ผ่าน**: จับตามชื่อ+ci+trim token, {#N} (+นอกช่วง→unknown คงไว้), unknown คงไว้+เตือน, escape `{{`/`}}`,
+    ช่องว่าง→"", trimValues on/off, joiner กำหนดเอง, skipEmptyRows on/off (rowsUsed/skipped ถูก), template ว่าง→error, literal ล้วน, token ว่าง, multi-line, ตัวเลข/บูลีน→string, header ซ้ำ→ตัวแรก, **invariant input ไม่ mutate**
+    (2) **Chrome UI จริง** (CSV `tracking,kg,container`): auto-template `{tracking} · {kg} · {container}` → `KY001 · 12 · TU-A` 2 บรรทัด (ข้ามแถวว่างท้าย 1) ·
+    SQL `INSERT INTO pkg VALUES ('{tracking}', {kg}, '{weight}')` → resolve tracking/kg ถูก, `{weight}` ไม่รู้จัก **คงไว้ + amber warning** · ดาวน์โหลด `packing-ข้อความ.txt` ตรงกับ output · **console สะอาด**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
@@ -519,4 +531,4 @@ flow:
     - ต้องไฟล์จริงของภูม → **invoice-vs-packing 🧾** (คือ reconcile เฉพาะทาง — รอ format จริงก่อนค่อยทำ ไม่งั้นเดา schema ผิด)
     - ต้อง spec/network → container-load (3D packing), fx-rate (เรตสด)
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️, เติมค่าลงล่าง ⬇️, ดึงข้อมูลข้ามไฟล์ (VLOOKUP) 🔗, แยกคอลัมน์ ✂️➡️, รวมคอลัมน์ 🔗➡️, ค้นหา-แทนที่ 🔁)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️, เติมค่าลงล่าง ⬇️, ดึงข้อมูลข้ามไฟล์ (VLOOKUP) 🔗, แยกคอลัมน์ ✂️➡️, รวมคอลัมน์ 🔗➡️, ค้นหา-แทนที่ 🔁, สร้างข้อความจากตาราง 📝)
