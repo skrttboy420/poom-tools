@@ -452,6 +452,17 @@ flow:
     blanksLast (asc/desc/ปิด), number บังคับเลขมาก่อน, case-insensitive, ไม่มีคีย์→คงเดิม, **invariant permutation 200 แถว**, stability, input ไม่ถูกแก้
     (2) **Chrome UI จริง** (CSV tracking/kg/container 4 แถว): default เรียง tracking = KY001-004 · เปลี่ยนเป็น kg (ตัวเลข) → 2,10,10,100 tie เสถียร ·
     multi-key container↑ + kg↓ → KY003(100,TU-A),KY001(2,TU-A),KY002(10,TU-B),KY004(10,TU-B) ถูก · Excel `packing-เรียง.xlsx` PK magic 16KB · **console สะอาด**
+- 2026-07-10 — **เครื่องมือที่ 26 พร้อมใช้: เติมค่าลงล่าง ⬇️** (`/fill`) — แก้ปัญหาจริงฟอร์แมต iTAM: "เลขตู้ (container)" มีเฉพาะแถวแรกของกลุ่ม แถวที่เหลือเว้นว่าง → เติมให้ครบทุกแถว เพื่อให้ /group /split /reconcile จับกลุ่มถูก
+  · engine `src\lib\fill\fill.ts` (pure): `fillCells(header, dataRows, cols, {direction, trimBlank, resetOnBlankRow})` → เติมช่องว่างด้วยค่า "ที่มีค่าล่าสุด" ในทิศที่กำหนด
+    - **ปรัชญา = เติมเฉพาะช่องว่างเท่านั้น ไม่ทับค่าเดิม, ไม่ทำแถวหาย/ไม่เพิ่มแถว** → จำนวนแถวเท่าเดิม, ทุกช่องมีค่าเดิมคงเป๊ะ (invariant test 100 แถว + input ไม่ mutate)
+    - `direction: down` (default, บน→ล่าง) / `up` (ล่าง→บน) · `trimBlank` (default on: ช่องเว้นวรรคล้วน = ว่าง) · หลายคอลัมน์พร้อมกันได้
+    - **กันแถวผี:** แถวที่ว่างทั้งแถว (เช่น trailing row จาก CSV / ตัวคั่น section) **ไม่ถูกเติมเสมอ** (ไม่งั้นได้แถวที่มีแต่ค่าที่เติม) · default ยัง carry ค่าข้ามแถวว่างไปแถวถัดไป · `resetOnBlankRow` = ให้แถวว่างรีเซ็ต carry (เริ่มกลุ่มใหม่)
+    - `stillBlank` = ช่องว่างที่เติมไม่ได้ (ไม่มีค่าให้พาไป เช่น ว่างตั้งแต่บนสุดตอน fill down)
+  · UI `src\app\fill\page.tsx` (client): reuse parse/detect/columns/FileDropzone → อัปโหลด → auto-guess คอลัมน์ตู้/container/forwarder → เลือกคอลัมน์ (chips) + ทิศ (ลง/ขึ้น) + toggle →
+    ผล = chips (เติมกี่ช่อง / ยังว่างกี่ช่อง) + ตารางไฮไลต์ **เขียวเฉพาะช่องที่ถูกเติม** (เดิมว่าง→มีค่า) + ดาวน์โหลด CSV/Excel
+  · verify 2 ชั้น: (1) **Node test 36/36 ผ่าน**: fill down/up, ไม่ทับค่าเดิม, ว่างบนสุด→stillBlank, หลายคอลัมน์, trimBlank on/off, resetOnBlankRow, **แถวว่างไม่ถูกเติม (กันแถวผี) แต่ carry ต่อ**, invariant 100 แถว+input ไม่ mutate, คอลัมน์นอกช่วง, แถวสั้นขยาย, `[]`=แถวว่างข้าม
+    (2) **Chrome UI จริง** (CSV container/tracking/kg 5 แถว + trailing row): auto-guess=container · down → เติม 3 (KY002/KY003→TU-A, KY005→TU-B) **แถวว่างท้ายคงว่าง ไม่เกิดแถวผี** ไฮไลต์เขียว 3 ช่อง ·
+    up → เติม 2 (KY002/KY003←TU-B), KY005 ยังว่าง 1 · Excel `packing-เติม.xlsx` PK magic 16KB · **console สะอาด**
 - **ถัดไป (roadmap):** persist ลง staging table ใน Supabase ภูม + เก็บ mapping preset
   ต่อฝั่ง (จำ column map ของแต่ละ format ไว้ใช้ซ้ำ) · handle หลาย sheet ดีขึ้น
   · ideas: Pacred paste-ready export · three-way reconcile · Data Cleaner/normalizer
@@ -461,4 +472,4 @@ flow:
     - ต้องไฟล์จริงของภูม → **invoice-vs-packing 🧾** (คือ reconcile เฉพาะทาง — รอ format จริงก่อนค่อยทำ ไม่งั้นเดา schema ผิด)
     - ต้อง spec/network → container-load (3D packing), fx-rate (เรตสด)
   · **จากบรีฟ (ยังไม่ทำ):** ประวัติการใช้งาน (history) · แชร์ผลลัพธ์
-    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️)
+    (✅ ทำแล้ว: CBM, Data Cleaner, แปลงหน่วย, drag-drop upload, จัดรูป JSON, ปุ่มสลับธีม dark/light, ลบข้อมูลซ้ำ ♻️, แปลง CSV↔Excel 🔄, แยกไฟล์ Excel ✂️, รวมหลายไฟล์ Excel 🧩, เข้ารหัส/ถอดรหัส Base64+URL 🔡, ทดสอบ Regex 🔤, คำนวณ VAT + กำไร 🧮, เปรียบเทียบ JSON 🧬, ค้นหา & กรองข้อมูล 🔎, เทียบข้อความ 🔀, จัดรูป SQL 🗃️, แปลง/ย่อ/บีบอัดรูป 🖼️, สุ่มรายชื่อ 🎲, สรุปยอด & สถิติคอลัมน์ 📊, แปลง JSON ↔ ตาราง/CSV 🔧, เทียบ 2 รายการ 🔁, เลือก/จัดเรียงคอลัมน์ 🧲, สรุปยอดแบบจัดกลุ่ม 🧮, เรียงลำดับตาราง ↕️, เติมค่าลงล่าง ⬇️)
