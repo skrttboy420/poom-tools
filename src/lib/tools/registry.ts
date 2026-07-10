@@ -107,6 +107,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["extract", "ดึง", "regex", "pattern", "capture", "container", "เลขตู้", "tracking", "ดึงเลข", "ดึงรหัส", "note", "รายละเอียด", "กลุ่ม", "group", "match", "แยกออกมา", "regexp"],
   },
+  {
+    id: "row-number",
+    name: "ออกเลขลำดับ",
+    desc: "เติมคอลัมน์เลขรัน (No. 1..N) ให้ทุกแถว — ตั้งจุดเริ่ม/ก้าว/เติม 0 นำหน้า/prefix · นับแยกต่อกลุ่ม (เลขกล่องต่อตู้) ได้ · /seq-gap หาเลขที่หาย · อันนี้สร้างเลขลำดับใหม่ · ไม่แตะข้อมูลเดิม",
+    icon: "#️⃣",
+    category: "clean",
+    href: "/row-number",
+    status: "ready",
+    keywords: ["row number", "เลขลำดับ", "เลขรัน", "running number", "numbering", "ลำดับ", "index", "no.", "sequence", "auto number", "เลขที่", "เลขกล่อง", "line item", "prefix", "zero pad", "เติมศูนย์", "ต่อกลุ่ม", "ต่อตู้", "container"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
