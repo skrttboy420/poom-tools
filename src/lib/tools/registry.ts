@@ -77,6 +77,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["near duplicate", "คล้ายกัน", "ใกล้เคียง", "fuzzy", "fuzzy match", "พิมพ์ผิด", "typo", "edit distance", "levenshtein", "ระยะแก้ไข", "similarity", "ความคล้าย", "tracking", "ตู้", "container", "reconcile", "จับคู่ไม่ติด", "นับซ้ำ", "O แทน 0", "สลับตัวอักษร", "เกือบซ้ำ"],
   },
+  {
+    id: "outlier",
+    name: "จับค่าตัวเลขผิดปกติ (Outlier)",
+    desc: "หาค่าน้ำหนัก/CBM/จำนวนที่สูง-ต่ำผิดปกติเทียบกับเพื่อน ๆ (น่าจะกรอกผิด เกินศูนย์/จุดทศนิยมเลื่อน) — /gap จับแค่ 0/ว่าง อันนี้จับค่าที่มีอยู่แต่ผิดปกติ · IQR/z-score · โชว์ให้ดูก่อน ไม่แก้ให้",
+    icon: "🚩",
+    category: "clean",
+    href: "/outlier",
+    status: "ready",
+    keywords: ["outlier", "ผิดปกติ", "anomaly", "ค่าผิด", "กรอกผิด", "เกินศูนย์", "จุดทศนิยม", "iqr", "z-score", "zscore", "น้ำหนัก", "weight", "kg", "cbm", "ปริมาตร", "สูงผิดปกติ", "ต่ำผิดปกติ", "สถิติ", "quartile", "ค่าเบี่ยงเบน", "outliers", "detect", "แปลกปลอม", "เพี้ยน"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
