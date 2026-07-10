@@ -177,6 +177,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["case", "ตัวพิมพ์", "ตัวใหญ่", "ตัวเล็ก", "uppercase", "lowercase", "title case", "sentence case", "แปลงตัวพิมพ์", "พิมพ์ใหญ่", "พิมพ์เล็ก", "capitalize", "normalize", "รหัส", "tracking", "forwarder", "ขึ้นต้นคำ", "ขึ้นต้นประโยค", "upper", "lower"],
   },
+  {
+    id: "schema",
+    name: "ส่องชนิดข้อมูลแต่ละคอลัมน์",
+    desc: "รู้จักไฟล์ก่อนลงมือ — เดาชนิดข้อมูลทุกคอลัมน์ (จำนวนเต็ม/ทศนิยม/วันที่/ข้อความ) + ชี้ 'ค่าที่ไม่เข้าพวก' จับ typo/ข้อมูลปน + เตือนคอลัมน์เลข 0 นำหน้า (Excel อาจตัดหาย) · อ่านอย่างเดียว ไม่แก้ข้อมูล",
+    icon: "🔬",
+    category: "clean",
+    href: "/schema",
+    status: "ready",
+    keywords: ["schema", "ชนิดข้อมูล", "ชนิด", "type", "profiler", "profile", "ส่อง", "ตรวจไฟล์", "inspect", "รู้จักไฟล์", "data type", "column type", "typo", "ค่าแปลก", "ค่าไม่เข้าพวก", "เลข 0 นำหน้า", "leading zero", "distinct", "ตรวจคอลัมน์", "วิเคราะห์", "รู้จักข้อมูล", "integer", "decimal", "date"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
