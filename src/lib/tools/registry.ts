@@ -127,6 +127,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["baht text", "บาทถ้วน", "อ่านเลข", "ตัวอักษร", "จำนวนเงิน", "เงิน", "สตางค์", "thai", "number to words", "spell", "invoice", "ใบแจ้งหนี้", "ใบกำกับ", "ใบเสร็จ", "ใบเสนอราคา", "ตัวเลขเป็นคำ", "อ่านจำนวนเงิน"],
   },
+  {
+    id: "value-map",
+    name: "แมปค่าตามพจนานุกรม",
+    desc: "แทนค่าทั้งคอลัมน์ทีเดียวตามพจนานุกรมที่พิมพ์เอง (รหัส forwarder → ชื่อเต็ม, รหัสสถานะ/ประเทศ → ข้อความ) · /replace แทนทีละคู่ · /lookup ดึงจากไฟล์ · อันนี้ใส่หลายคู่แล้วแทนทีเดียว · ค่าที่ไม่มี → เก็บของเดิม โชว์ก่อน",
+    icon: "🗺️",
+    category: "excel",
+    href: "/map",
+    status: "ready",
+    keywords: ["value map", "แมปค่า", "แมปปิ้ง", "mapping", "พจนานุกรม", "dictionary", "แทนค่า", "รหัส", "code", "แปลงรหัส", "รหัสเป็นชื่อ", "forwarder", "สถานะ", "status", "ประเทศ", "country", "ท่าเรือ", "port", "lookup table", "translate", "recode", "แทนที่ทั้งคอลัมน์"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
