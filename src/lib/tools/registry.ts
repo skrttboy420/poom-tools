@@ -207,6 +207,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["histogram", "ฮิสโตแกรม", "binning", "bin", "จัดกลุ่มช่วง", "ช่วงตัวเลข", "การกระจาย", "distribution", "bucket", "ช่วง", "range", "น้ำหนัก", "kg", "cbm", "กล่อง", "แบ่งช่วง", "กระจายตัว", "การแจกแจง", "bucketize"],
   },
+  {
+    id: "sample",
+    name: "ดึงตัวอย่างแถว (Sampling)",
+    desc: "สุ่มดึงแถวจากไฟล์ใหญ่มา spot-check ก่อนเอาเข้า Pacred เช่น packing list 800 แถว ดึง 20 แถวเช็คคุณภาพ · 4 แบบ (หัวไฟล์ / ท้ายไฟล์ / สุ่ม / ทุก ๆ N แถว) · สุ่มแบบใส่ seed ได้ ทำซ้ำได้ผลเดิม · อ่านอย่างเดียว ไม่แก้ข้อมูล",
+    icon: "🎰",
+    category: "excel",
+    href: "/sample",
+    status: "ready",
+    keywords: ["sample", "sampling", "สุ่มแถว", "ดึงตัวอย่าง", "ตัวอย่าง", "spot-check", "spot check", "สุ่มตรวจ", "head", "tail", "หัวไฟล์", "ท้ายไฟล์", "random", "สุ่ม", "systematic", "ทุก ๆ N แถว", "seed", "reproducible", "ทำซ้ำได้", "เช็คคุณภาพ", "subset", "ดึงแถว", "เลือกแถว"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
