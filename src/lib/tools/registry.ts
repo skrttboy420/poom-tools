@@ -97,6 +97,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["validate", "validation", "ตรวจสอบ", "ตรวจความถูกต้อง", "กฎ", "rule", "required", "ต้องมีค่า", "pattern", "regex", "รูปแบบ", "allowed", "รายการ", "unique", "ห้ามซ้ำ", "min", "max", "ช่วง", "range", "integer", "จำนวนเต็ม", "ตัวเลข", "number", "ตรวจก่อนเข้า", "pacred", "data quality", "คุณภาพข้อมูล", "ผิดกฎ"],
   },
+  {
+    id: "extract",
+    name: "ดึงข้อความด้วย pattern",
+    desc: "ดึงส่วนที่ตรง regex ออกจากช่องเดียว (เช่น เลขตู้ในช่อง note/รายละเอียด) มาเป็นคอลัมน์ใหม่ · capture group → 1 คอลัมน์/กลุ่ม · /split-col แยกตามตัวคั่น · /replace แทนที่ในที่เดิม · อันนี้ดึงออกมา · ไม่แก้ค่าเดิม",
+    icon: "🎯",
+    category: "clean",
+    href: "/extract",
+    status: "ready",
+    keywords: ["extract", "ดึง", "regex", "pattern", "capture", "container", "เลขตู้", "tracking", "ดึงเลข", "ดึงรหัส", "note", "รายละเอียด", "กลุ่ม", "group", "match", "แยกออกมา", "regexp"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
