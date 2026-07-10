@@ -167,6 +167,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["pad", "เติมศูนย์", "เติม 0", "เลข 0 นำหน้า", "leading zero", "จัดความกว้าง", "จัดรูปรหัส", "รหัส", "code", "zero pad", "ความยาว", "width", "truncate", "ตัดความยาว", "normalize", "เลขกล่อง", "007", "align", "จัดคอลัมน์", "format code"],
   },
+  {
+    id: "case",
+    name: "แปลงตัวพิมพ์ใหญ่/เล็ก",
+    desc: "normalize ตัวพิมพ์ในคอลัมน์ (เช่น 'ky001' ↔ 'KY001') ให้เป็นแบบเดียวก่อนเทียบ/เข้า Pacred — ตัวใหญ่/ตัวเล็ก/ขึ้นต้นคำ/ขึ้นต้นประโยค · แค่เปลี่ยนตัวพิมพ์ ไม่ลบ/เพิ่มตัวอักษร · ภาษาไทยไม่กระทบ",
+    icon: "🔠",
+    category: "excel",
+    href: "/case",
+    status: "ready",
+    keywords: ["case", "ตัวพิมพ์", "ตัวใหญ่", "ตัวเล็ก", "uppercase", "lowercase", "title case", "sentence case", "แปลงตัวพิมพ์", "พิมพ์ใหญ่", "พิมพ์เล็ก", "capitalize", "normalize", "รหัส", "tracking", "forwarder", "ขึ้นต้นคำ", "ขึ้นต้นประโยค", "upper", "lower"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
