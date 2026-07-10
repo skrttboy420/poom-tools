@@ -137,6 +137,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["value map", "แมปค่า", "แมปปิ้ง", "mapping", "พจนานุกรม", "dictionary", "แทนค่า", "รหัส", "code", "แปลงรหัส", "รหัสเป็นชื่อ", "forwarder", "สถานะ", "status", "ประเทศ", "country", "ท่าเรือ", "port", "lookup table", "translate", "recode", "แทนที่ทั้งคอลัมน์"],
   },
+  {
+    id: "container-check",
+    name: "ตรวจเลขตู้คอนเทนเนอร์",
+    desc: "ตรวจเช็คดิจิต (check digit) ตามมาตรฐาน ISO 6346 — จับเลขตู้พิมพ์ผิดในไฟล์ก่อนเอาเข้า Pacred · ไม่แก้เลขเดิม แค่เพิ่มคอลัมน์ 'ผลตรวจ' แล้วโชว์ตัวที่ผิดให้เช็คก่อน",
+    icon: "📦",
+    category: "logistics",
+    href: "/container-check",
+    status: "ready",
+    keywords: ["container", "เลขตู้", "ตู้", "คอนเทนเนอร์", "iso 6346", "check digit", "เช็คดิจิต", "ตรวจเลขตู้", "validate", "typo", "พิมพ์ผิด", "container number", "cntr", "ตรวจตู้", "หลักตรวจสอบ", "container check"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
