@@ -237,6 +237,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["row aggregate", "รวมคอลัมน์", "รวมแถว", "row sum", "sum columns", "ผลรวมแถว", "เฉลี่ยแถว", "row avg", "row min", "row max", "across columns", "ข้ามคอลัมน์", "หลายคอลัมน์", "รวมหลายคอลัมน์", "total", "น้ำหนัก", "kg", "cbm", "กล่อง", "นับช่อง", "พิสัย", "range"],
   },
+  {
+    id: "chargeable",
+    name: "คำนวณน้ำหนักคิดค่าขนส่ง",
+    desc: "จากไฟล์ที่มีคอลัมน์ กว้าง/ยาว/สูง/จำนวน/น้ำหนัก → เติม CBM + น้ำหนักเชิงปริมาตร + น้ำหนักคิดเงิน ต่อแถว · ทางอากาศ (air) คิดเงิน = max(น้ำหนักจริง, ปริมาตร÷divisor 6000/5000) · ทางเรือ (W/M) = max(น้ำหนักจริง, CBM×1000) · หน่วย cm/m/inch · ต่างจากเครื่อง CBM ที่กรอกมือทีละรายการ — อันนี้ทำทั้งไฟล์ทีเดียว · มิติไม่ครบ = เว้นว่าง ไม่เดามั่ว · อ่านอย่างเดียว ไม่แก้ข้อมูลเดิม",
+    icon: "✈️",
+    category: "logistics",
+    href: "/chargeable",
+    status: "ready",
+    keywords: ["chargeable weight", "น้ำหนักคิดเงิน", "น้ำหนักคิดค่าขนส่ง", "volumetric", "น้ำหนักเชิงปริมาตร", "dimensional weight", "dim weight", "cbm", "ปริมาตร", "คิว", "w/m", "wm", "air freight", "sea freight", "ทางอากาศ", "ทางเรือ", "divisor", "6000", "5000", "freight", "ค่าระวาง", "ค่าขนส่ง", "กว้างยาวสูง", "กล่อง", "น้ำหนัก", "kg"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
