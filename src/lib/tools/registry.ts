@@ -267,6 +267,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["round", "ปัดเลข", "ปัดตัวเลข", "ปัดขึ้น", "ปัดลง", "ปัดเศษ", "ceil", "floor", "round up", "round down", "nearest", "ใกล้สุด", "ขั้น", "step", "0.5", "1.0", "ทศนิยม", "decimals", "น้ำหนักคิดเงิน", "chargeable", "คิดเงิน", "บิล", "ค่าขนส่ง", "น้ำหนัก", "kg", "cbm", "ปัดเป็นขั้น", "rounding"],
   },
+  {
+    id: "bracket-lookup",
+    name: "จัดชั้นตามช่วงตัวเลข",
+    desc: "เติมเรต/ป้ายให้ทุกแถวตามช่วงที่ค่าตกลงไป (tiered lookup) — เช่น น้ำหนัก ≤10 กก. เรต 50, ≤50 เรต 40, ≤100 เรต 30, มากกว่านั้น 20 · หรือจัดหมวดขนาด เล็ก/กลาง/ใหญ่ · ตั้งช่วงเองได้ไม่จำกัด · ช่องไม่ใช่ตัวเลข/ไม่เข้าช่วงไหน = เว้นว่าง ไม่เดามั่ว · เติมคอลัมน์ใหม่ ไม่ทับของเดิม",
+    icon: "🪜",
+    category: "logistics",
+    href: "/bracket",
+    status: "ready",
+    keywords: ["bracket", "tier", "tiered", "จัดชั้น", "ขั้นบันได", "ช่วง", "เรต", "rate", "อัตรา", "lookup", "ค้นค่า", "จัดหมวด", "หมวด", "ขนาด", "เล็กกลางใหญ่", "small medium large", "band", "range", "น้ำหนัก", "kg", "cbm", "คิว", "ค่าขนส่ง", "shipping rate", "เรตค่าส่ง", "step rate", "grade", "เกรด", "ป้าย", "label"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
