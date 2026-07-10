@@ -217,6 +217,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["sample", "sampling", "สุ่มแถว", "ดึงตัวอย่าง", "ตัวอย่าง", "spot-check", "spot check", "สุ่มตรวจ", "head", "tail", "หัวไฟล์", "ท้ายไฟล์", "random", "สุ่ม", "systematic", "ทุก ๆ N แถว", "seed", "reproducible", "ทำซ้ำได้", "เช็คคุณภาพ", "subset", "ดึงแถว", "เลือกแถว"],
   },
+  {
+    id: "group-share",
+    name: "สัดส่วน & อันดับในกลุ่ม",
+    desc: "แต่ละแถว (กล่อง/tracking) คิดเป็นกี่ % ของ \"ตู้ของตัวเอง\" + น้ำหนักรวมของตู้นั้น + อันดับหนักสุดในตู้ · เห็นว่ากล่องไหนกินสัดส่วนในตู้เยอะ · ต่างจาก % สัดส่วน (เทียบทั้งคอลัมน์) และสรุปกลุ่ม (ยุบเป็น 1 แถว) — อันนี้เติมค่าคืนราย \"แถว\" · อ่านอย่างเดียว ไม่แก้ข้อมูลเดิม",
+    icon: "🥧",
+    category: "excel",
+    href: "/group-share",
+    status: "ready",
+    keywords: ["group share", "สัดส่วนในกลุ่ม", "% ในกลุ่ม", "ยอดรวมกลุ่ม", "รวมกลุ่ม", "อันดับในกลุ่ม", "within group", "proportion", "share", "pareto", "container", "ตู้", "forwarder", "สัดส่วน", "เปอร์เซ็นต์", "อันดับ", "rank", "น้ำหนัก", "kg", "cbm", "กล่อง"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
