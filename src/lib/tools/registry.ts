@@ -187,6 +187,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["schema", "ชนิดข้อมูล", "ชนิด", "type", "profiler", "profile", "ส่อง", "ตรวจไฟล์", "inspect", "รู้จักไฟล์", "data type", "column type", "typo", "ค่าแปลก", "ค่าไม่เข้าพวก", "เลข 0 นำหน้า", "leading zero", "distinct", "ตรวจคอลัมน์", "วิเคราะห์", "รู้จักข้อมูล", "integer", "decimal", "date"],
   },
+  {
+    id: "compare-cols",
+    name: "เทียบ 2 คอลัมน์",
+    desc: "เทียบ 2 คอลัมน์ในไฟล์เดียว ทีละแถว เช่น น้ำหนักแจ้ง ↔ น้ำหนักชั่ง, จำนวนแจ้ง ↔ นับจริง, tracking 2 คอลัมน์ที่ควรตรงกัน → บอกทันทีว่าแถวไหนตรง/ต่าง (พร้อมผลต่าง)/มีฝั่งเดียว · มี tolerance สำหรับตัวเลข · อ่านอย่างเดียว ไม่แก้ข้อมูล",
+    icon: "🆚",
+    category: "compare",
+    href: "/compare-cols",
+    status: "ready",
+    keywords: ["เทียบคอลัมน์", "เทียบ 2 คอลัมน์", "compare columns", "column vs column", "แจ้ง", "ชั่ง", "declared", "actual", "expected", "ผลต่าง", "delta", "tolerance", "reconcile", "เทียบในแถว", "น้ำหนักแจ้ง", "นับจริง", "เปรียบเทียบ", "ต่างกัน", "ตรงกัน", "diff"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
