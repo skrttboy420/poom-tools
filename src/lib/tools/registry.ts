@@ -87,6 +87,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["outlier", "ผิดปกติ", "anomaly", "ค่าผิด", "กรอกผิด", "เกินศูนย์", "จุดทศนิยม", "iqr", "z-score", "zscore", "น้ำหนัก", "weight", "kg", "cbm", "ปริมาตร", "สูงผิดปกติ", "ต่ำผิดปกติ", "สถิติ", "quartile", "ค่าเบี่ยงเบน", "outliers", "detect", "แปลกปลอม", "เพี้ยน"],
   },
+  {
+    id: "validate",
+    name: "ตรวจความถูกต้องตามกฎ (Data Validation)",
+    desc: "ตั้งกฎที่ข้อมูลควรเป็น (ต้องมีค่า/เป็นตัวเลข/อยู่ในช่วง/ตรง pattern/อยู่ในรายการ/ห้ามซ้ำ) → บอกว่าแถวไหนช่องไหนผิดกฎอะไร ก่อนเอาเข้า Pacred · /gap จับแค่ 0/ว่าง · /outlier จับค่าเพี้ยนสถิติ · อันนี้ rule-based · โชว์ให้ดูก่อน ไม่แก้ให้",
+    icon: "🛡️",
+    category: "clean",
+    href: "/validate",
+    status: "ready",
+    keywords: ["validate", "validation", "ตรวจสอบ", "ตรวจความถูกต้อง", "กฎ", "rule", "required", "ต้องมีค่า", "pattern", "regex", "รูปแบบ", "allowed", "รายการ", "unique", "ห้ามซ้ำ", "min", "max", "ช่วง", "range", "integer", "จำนวนเต็ม", "ตัวเลข", "number", "ตรวจก่อนเข้า", "pacred", "data quality", "คุณภาพข้อมูล", "ผิดกฎ"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
