@@ -197,6 +197,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["เทียบคอลัมน์", "เทียบ 2 คอลัมน์", "compare columns", "column vs column", "แจ้ง", "ชั่ง", "declared", "actual", "expected", "ผลต่าง", "delta", "tolerance", "reconcile", "เทียบในแถว", "น้ำหนักแจ้ง", "นับจริง", "เปรียบเทียบ", "ต่างกัน", "ตรงกัน", "diff"],
   },
+  {
+    id: "bins",
+    name: "จัดกลุ่มช่วงตัวเลข (Histogram)",
+    desc: "เลือก 1 คอลัมน์ตัวเลข → นับว่ามีกี่รายการในแต่ละช่วง เช่น มีกี่พัสดุในช่วง 0-10 / 10-50 / 50+ kg · แบ่งช่วงได้ 3 แบบ (กว้างเท่ากัน / จำนวนช่วง / จุดตัดเอง) พร้อม % และผลรวมต่อช่วง · อ่านอย่างเดียว ไม่แก้ข้อมูล",
+    icon: "📶",
+    category: "excel",
+    href: "/bins",
+    status: "ready",
+    keywords: ["histogram", "ฮิสโตแกรม", "binning", "bin", "จัดกลุ่มช่วง", "ช่วงตัวเลข", "การกระจาย", "distribution", "bucket", "ช่วง", "range", "น้ำหนัก", "kg", "cbm", "กล่อง", "แบ่งช่วง", "กระจายตัว", "การแจกแจง", "bucketize"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
