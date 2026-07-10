@@ -277,6 +277,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["bracket", "tier", "tiered", "จัดชั้น", "ขั้นบันได", "ช่วง", "เรต", "rate", "อัตรา", "lookup", "ค้นค่า", "จัดหมวด", "หมวด", "ขนาด", "เล็กกลางใหญ่", "small medium large", "band", "range", "น้ำหนัก", "kg", "cbm", "คิว", "ค่าขนส่ง", "shipping rate", "เรตค่าส่ง", "step rate", "grade", "เกรด", "ป้าย", "label"],
   },
+  {
+    id: "date-diff",
+    name: "คำนวณจำนวนวันระหว่างวันที่",
+    desc: "เติมคอลัมน์ \"จำนวนวัน\" ให้ทุกแถวจากผลต่างวันที่ 2 ช่อง — เช่น ระยะเวลาขนส่ง (ETA − ETD), วันเก็บตู้/ค่าเดโมเรจ, อายุงาน · เลือกหน่วยวัน/สัปดาห์ · นับปลายทั้งสอง (inclusive) · รองรับ พ.ศ./ค.ศ. และ DD/MM · ช่องที่อ่านวันที่ไม่ได้ = เว้นว่าง ไม่เดามั่ว · เติมคอลัมน์ใหม่ ไม่ทับของเดิม",
+    icon: "📆",
+    category: "logistics",
+    href: "/date-diff",
+    status: "ready",
+    keywords: ["date diff", "date difference", "จำนวนวัน", "ระยะเวลา", "ผลต่างวันที่", "วันที่", "days between", "transit", "transit time", "ระยะเวลาขนส่ง", "eta", "etd", "เดโมเรจ", "demurrage", "วันเก็บตู้", "detention", "อายุ", "อายุงาน", "สัปดาห์", "weeks", "ลบวันที่", "ช่วงเวลา", "duration", "due", "กำหนด"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
