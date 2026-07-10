@@ -157,6 +157,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["บัตรประชาชน", "เลขบัตรประชาชน", "ประชาชน", "เลขผู้เสียภาษี", "ผู้เสียภาษี", "ภาษี", "tax id", "national id", "nid", "citizen id", "juristic", "นิติบุคคล", "13 หลัก", "check digit", "เช็คดิจิต", "ตรวจเลข", "validate", "typo", "พิมพ์ผิด", "เลขประจำตัว", "หลักตรวจสอบ"],
   },
+  {
+    id: "pad",
+    name: "เติมเลข 0 นำหน้า / จัดความกว้างรหัส",
+    desc: "แก้ปัญหา '007' กลายเป็น '7' (Excel/CSV ตัดเลข 0 นำหน้า) — เติมให้ครบความกว้างเดียวกันก่อนเทียบ/เข้า Pacred · เติมอย่างเดียว = ปลอดภัย ไม่ลบของเดิม",
+    icon: "🔢",
+    category: "excel",
+    href: "/pad",
+    status: "ready",
+    keywords: ["pad", "เติมศูนย์", "เติม 0", "เลข 0 นำหน้า", "leading zero", "จัดความกว้าง", "จัดรูปรหัส", "รหัส", "code", "zero pad", "ความยาว", "width", "truncate", "ตัดความยาว", "normalize", "เลขกล่อง", "007", "align", "จัดคอลัมน์", "format code"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
