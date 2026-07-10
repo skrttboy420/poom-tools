@@ -117,6 +117,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["row number", "เลขลำดับ", "เลขรัน", "running number", "numbering", "ลำดับ", "index", "no.", "sequence", "auto number", "เลขที่", "เลขกล่อง", "line item", "prefix", "zero pad", "เติมศูนย์", "ต่อกลุ่ม", "ต่อตู้", "container"],
   },
+  {
+    id: "baht-text",
+    name: "อ่านเลขเป็นบาทถ้วน",
+    desc: "แปลงจำนวนเงินเป็นข้อความไทย (บาทถ้วน/สตางค์) — ไว้ใส่บรรทัด \"จำนวนเงินตัวอักษร\" ในใบแจ้งหนี้/ใบกำกับ/ใบเสร็จ · รองรับคอมมา + ค่าติดลบ · ปัดเศษเป็นสตางค์",
+    icon: "💰",
+    category: "office",
+    href: "/baht-text",
+    status: "ready",
+    keywords: ["baht text", "บาทถ้วน", "อ่านเลข", "ตัวอักษร", "จำนวนเงิน", "เงิน", "สตางค์", "thai", "number to words", "spell", "invoice", "ใบแจ้งหนี้", "ใบกำกับ", "ใบเสร็จ", "ใบเสนอราคา", "ตัวเลขเป็นคำ", "อ่านจำนวนเงิน"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
