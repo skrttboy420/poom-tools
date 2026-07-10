@@ -257,6 +257,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["allocate", "ปันส่วน", "ปันต้นทุน", "เฉลี่ยต้นทุน", "proportional", "allocation", "apportion", "prorate", "pro rata", "แบ่งต้นทุน", "กระจายต้นทุน", "ค่าขนส่ง", "freight allocation", "cost allocation", "largest remainder", "ฐาน", "basis", "น้ำหนัก", "kg", "cbm", "คิว", "จำนวน", "กล่อง", "container", "ตู้", "ยอดรวม", "no loss"],
   },
+  {
+    id: "round-column",
+    name: "ปัดตัวเลขในคอลัมน์",
+    desc: "ปัดทั้งคอลัมน์ทีเดียวตามกฎบิล — ปัดขึ้น/ลง/ใกล้สุด เป็นขั้น (0.5, 1, 5, 10) หรือจำนวนทศนิยม · use-case จริง: น้ำหนักคิดเงินขนส่งปัดขึ้นเป็นขั้น 0.5/1 กก. เสมอ · เติมคอลัมน์ใหม่ (ไม่ทับของเดิม) หรือเลือกทับก็ได้ · ช่องไม่ใช่ตัวเลข = คงค่าเดิม ไม่แตะ · ทุกแถวออกครบ ไม่หาย",
+    icon: "🔟",
+    category: "logistics",
+    href: "/round",
+    status: "ready",
+    keywords: ["round", "ปัดเลข", "ปัดตัวเลข", "ปัดขึ้น", "ปัดลง", "ปัดเศษ", "ceil", "floor", "round up", "round down", "nearest", "ใกล้สุด", "ขั้น", "step", "0.5", "1.0", "ทศนิยม", "decimals", "น้ำหนักคิดเงิน", "chargeable", "คิดเงิน", "บิล", "ค่าขนส่ง", "น้ำหนัก", "kg", "cbm", "ปัดเป็นขั้น", "rounding"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
