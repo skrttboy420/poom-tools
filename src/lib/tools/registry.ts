@@ -147,6 +147,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["container", "เลขตู้", "ตู้", "คอนเทนเนอร์", "iso 6346", "check digit", "เช็คดิจิต", "ตรวจเลขตู้", "validate", "typo", "พิมพ์ผิด", "container number", "cntr", "ตรวจตู้", "หลักตรวจสอบ", "container check"],
   },
+  {
+    id: "thai-id",
+    name: "ตรวจเลขบัตร ปชช. / ผู้เสียภาษี",
+    desc: "ตรวจเช็คดิจิต (หลักที่ 13) ของเลขบัตรประชาชน/เลขประจำตัวผู้เสียภาษี 13 หลัก — จับเลขพิมพ์ผิดในไฟล์ก่อนเอาเข้า Pacred · ไม่แก้เลขเดิม แค่เพิ่มคอลัมน์ 'ผลตรวจ' แล้วโชว์ตัวที่ผิดให้เช็คก่อน",
+    icon: "🪪",
+    category: "office",
+    href: "/thai-id",
+    status: "ready",
+    keywords: ["บัตรประชาชน", "เลขบัตรประชาชน", "ประชาชน", "เลขผู้เสียภาษี", "ผู้เสียภาษี", "ภาษี", "tax id", "national id", "nid", "citizen id", "juristic", "นิติบุคคล", "13 หลัก", "check digit", "เช็คดิจิต", "ตรวจเลข", "validate", "typo", "พิมพ์ผิด", "เลขประจำตัว", "หลักตรวจสอบ"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
