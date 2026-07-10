@@ -247,6 +247,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["chargeable weight", "น้ำหนักคิดเงิน", "น้ำหนักคิดค่าขนส่ง", "volumetric", "น้ำหนักเชิงปริมาตร", "dimensional weight", "dim weight", "cbm", "ปริมาตร", "คิว", "w/m", "wm", "air freight", "sea freight", "ทางอากาศ", "ทางเรือ", "divisor", "6000", "5000", "freight", "ค่าระวาง", "ค่าขนส่ง", "กว้างยาวสูง", "กล่อง", "น้ำหนัก", "kg"],
   },
+  {
+    id: "allocate",
+    name: "ปันส่วนต้นทุนตามสัดส่วน",
+    desc: "มีค่าขนส่ง/ต้นทุนรวมของตู้ 1 ก้อน → ปันลงแต่ละกล่อง/tracking ตาม \"ฐาน\" (น้ำหนัก/CBM/จำนวน) → รู้ว่ากล่องไหนต้องคิดเงินเท่าไหร่ · ผลรวมยอดที่ปัน = ยอดรวมเป๊ะเสมอ (largest remainder — เศษปัดไม่ทำเงินหาย/เกิน) · ต่างจาก % ในกลุ่ม (บอกแค่สัดส่วน) — อันนี้ปันเป็นยอดจริง (บาท/กก.) · ฐานไม่ใช่ตัวเลข/ติดลบ = เว้นว่าง ไม่เดามั่ว · อ่านอย่างเดียว ไม่แก้ข้อมูลเดิม",
+    icon: "⚖️",
+    category: "logistics",
+    href: "/allocate",
+    status: "ready",
+    keywords: ["allocate", "ปันส่วน", "ปันต้นทุน", "เฉลี่ยต้นทุน", "proportional", "allocation", "apportion", "prorate", "pro rata", "แบ่งต้นทุน", "กระจายต้นทุน", "ค่าขนส่ง", "freight allocation", "cost allocation", "largest remainder", "ฐาน", "basis", "น้ำหนัก", "kg", "cbm", "คิว", "จำนวน", "กล่อง", "container", "ตู้", "ยอดรวม", "no loss"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
