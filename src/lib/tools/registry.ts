@@ -57,6 +57,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["หาย", "ตรวจ", "gap", "missing", "zero", "ศูนย์", "ว่าง", "clean", "momo", "ข้อมูลหาย"],
   },
+  {
+    id: "seq-gap",
+    name: "ตรวจเลขขาดช่วง (Sequence Gap)",
+    desc: "หาเลขที่หายในลำดับที่ควรต่อเนื่อง เช่น เลขกล่อง/เลขใบ 1-500 แต่บางเลขหาย + จับเลขซ้ำ",
+    icon: "🕳️",
+    category: "clean",
+    href: "/seq-gap",
+    status: "ready",
+    keywords: ["เลขขาด", "เลขหาย", "ลำดับ", "sequence", "gap", "missing number", "เลขกล่อง", "box", "running", "เลขใบ", "invoice", "ต่อเนื่อง", "ขาดช่วง", "ซ้ำ", "เลขที่หาย", "consecutive", "ครบไหม"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
