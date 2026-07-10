@@ -67,6 +67,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["เลขขาด", "เลขหาย", "ลำดับ", "sequence", "gap", "missing number", "เลขกล่อง", "box", "running", "เลขใบ", "invoice", "ต่อเนื่อง", "ขาดช่วง", "ซ้ำ", "เลขที่หาย", "consecutive", "ครบไหม"],
   },
+  {
+    id: "near-dup",
+    name: "หาค่าที่คล้ายกัน (Near-duplicate)",
+    desc: "หาคู่ค่าที่คล้ายกันแต่ไม่เหมือนเป๊ะ (พิมพ์ผิด O↔0, สลับตัวอักษร, ช่องว่างเกิน) ในคอลัมน์เดียว เช่น tracking/เลขตู้ ที่ทำให้ reconcile จับคู่ไม่ติด/นับซ้ำ · ใช้ระยะแก้ไข (edit distance) · โชว์คู่น่าสงสัยให้ดูก่อน ไม่แก้ให้อัตโนมัติ",
+    icon: "🫧",
+    category: "clean",
+    href: "/near-dup",
+    status: "ready",
+    keywords: ["near duplicate", "คล้ายกัน", "ใกล้เคียง", "fuzzy", "fuzzy match", "พิมพ์ผิด", "typo", "edit distance", "levenshtein", "ระยะแก้ไข", "similarity", "ความคล้าย", "tracking", "ตู้", "container", "reconcile", "จับคู่ไม่ติด", "นับซ้ำ", "O แทน 0", "สลับตัวอักษร", "เกือบซ้ำ"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
