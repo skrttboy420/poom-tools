@@ -297,6 +297,16 @@ export const TOOLS: Tool[] = [
     status: "ready",
     keywords: ["if", "case", "when", "เงื่อนไข", "ติดป้าย", "ป้าย", "label", "จัดหมวด", "หมวด", "จัดกลุ่ม", "tag", "จัดประเภท", "ประเภท", "if then", "if then else", "conditional", "rule", "กฎ", "เร่งด่วน", "ระงับ", "hold", "ด่วน", "flag", "ทำเครื่องหมาย", "categorize", "derive", "computed", "คอลัมน์เงื่อนไข", "มีคำว่า", "เท่ากับ", "มากกว่า", "น้อยกว่า", "regex", "status", "note", "หมายเหตุ", "สถานะ"],
   },
+  {
+    id: "date-parts",
+    name: "แยกส่วนวันที่",
+    desc: "แยกคอลัมน์วันที่ (ETD/ETA/วันตู้เข้า) เป็น ปี / เดือน / วัน / ไตรมาส / ปี-เดือน / ชื่อเดือน / วันในสัปดาห์ / สัปดาห์ (ISO) → เอาไปจัดกลุ่ม-สรุปตามเดือน/ไตรมาสต่อได้ (/group /pivot เช่น มีกี่ตู้ต่อเดือน · น้ำหนักรวมต่อไตรมาส) · parse วันที่จริง รองรับหลายรูปแบบ + Excel serial + พ.ศ. · ช่องที่ parse ไม่ได้ = เว้นว่าง ไม่เดามั่ว · เติมคอลัมน์ใหม่ ไม่ทับของเดิม",
+    icon: "📅",
+    category: "excel",
+    href: "/date-parts",
+    status: "ready",
+    keywords: ["date parts", "แยกวันที่", "แยกส่วนวันที่", "ปี", "เดือน", "วัน", "ไตรมาส", "quarter", "year", "month", "day", "weekday", "วันในสัปดาห์", "week", "สัปดาห์", "iso week", "ปี-เดือน", "year month", "ชื่อเดือน", "month name", "พ.ศ.", "buddhist", "etd", "eta", "ดึงเดือน", "ดึงปี", "extract date", "group by month", "จัดกลุ่มตามเดือน", "สรุปตามเดือน", "สรุปตามไตรมาส", "excel serial", "วันตู้เข้า"],
+  },
 
   // ---- เปรียบเทียบไฟล์ (soon) ----
   { id: "compare-pdf", name: "เปรียบเทียบ PDF", desc: "หาความต่างระหว่าง PDF 2 ไฟล์", icon: "📄", category: "compare", status: "soon", keywords: ["pdf", "เทียบ", "diff"] },
