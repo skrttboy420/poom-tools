@@ -1,6 +1,6 @@
 "use client";
 
-// Dashboard (หน้าแรกสไตล์ SaaS) — แทน ToolHub เดิม
+// Dashboard (หน้าแรกสไตล์ SaaS)
 // · hero + ทักทาย + ช่องค้นหาใหญ่ (reuse searchTools)
 // · การ์ดสรุป (วิเคราะห์และสรุป): พร้อมใช้ / รายการโปรด / เคยใช้ / หมวดหมู่ / เข้าใช้รวม
 // · ทางลัด: รายการโปรด ⭐ · ใช้บ่อย 🔥 · ล่าสุด 🕘 (เก็บใน localStorage ผ่าน useUsage/useFavs)
@@ -234,7 +234,7 @@ function SectionHead({ icon, title }: { icon: string; title: string }) {
   );
 }
 
-/* ── grid + การ์ดเครื่องมือ (สไตล์เดียวกับ ToolHub เดิม) ── */
+/* ── grid + การ์ดเครื่องมือ ── */
 function ToolGrid({ tools, favs, onFav }: { tools: Tool[]; favs: string[]; onFav: (id: string) => void }) {
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

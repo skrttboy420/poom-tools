@@ -1,6 +1,6 @@
 "use client";
 
-// hook รายการโปรด (favorites) ที่ใช้ร่วมกันระหว่าง Sidebar + ToolHub
+// hook รายการโปรด (favorites) ที่ใช้ร่วมกันระหว่าง Sidebar + Dashboard
 // เก็บใน localStorage คีย์ "poom-tools:favs" · ใช้ useSyncExternalStore
 // เพื่อเลี่ยง set-state-in-effect ของ React 19 + กัน hydration mismatch
 //   (SSR snapshot = "[]" แล้ว client sync ทีหลัง)
