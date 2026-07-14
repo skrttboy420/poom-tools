@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ThemeToggle from "@/components/ThemeToggle";
+import AppShell from "@/components/AppShell";
 
 // ตั้ง class .dark บน <html> ตั้งแต่ก่อน paint (กันจอกระพริบ/FOUC)
 // อ่าน localStorage แล้ว resolve โหมด system เป็นมืด/สว่างด้วย matchMedia
@@ -37,7 +38,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
       </head>
       <body className="min-h-full flex flex-col">
-        {children}
+        <AppShell>{children}</AppShell>
         <ThemeToggle />
       </body>
     </html>
